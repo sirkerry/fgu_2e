@@ -73,6 +73,20 @@
 	  control) that copies the dropped record's name across and sets the
 	  underlying link, mirroring the working pattern in the stock
 	  ruleset's own record_power.xml.
+
+	  Third: once drag-and-drop worked, the resulting skill entries were
+	  landing under Weapon Proficiencies on the character sheet instead
+	  of Non-Weapon/Skills. Root cause: CharManager.addClassProficiencyDB
+	  reads a "type" field off THIS ROW (not off the linked reference_skill
+	  record) to decide whether to route through addSkillRef or
+	  addProficiencyDB - the stock Class record's own nonweaponprof
+	  handling explicitly stamps type="skills" on its row before calling
+	  addClassProficiencyDB (manager_char.lua's addClassRef), but the base
+	  Race's own nonweaponprof handling never does this (meaning this
+	  would have misrouted even on stock content, had any UI ever existed
+	  to author it there). Fixed by stamping type="skills" (and copying
+	  the skill's own "text" description, which addSkillRef also reads
+	  off this row) in the same onDrop that sets name/shortcut.
 	-->
 	<windowclass name="ref_nonweapon_proficiency" merge="join">
 		<script>
@@ -95,6 +109,18 @@
 									local nodeRow = window.getDatabaseNode();
 									DB.setValue(nodeRow, "shortcut", "windowreference", sClass, sRecord);
 									DB.setValue(nodeRow, "name", "string", DB.getValue(nodeSource, "name", ""));
+									-- addClassProficiencyDB (manager_char.lua) reads "type" off
+									-- THIS ROW (not the linked skill record) to decide whether to
+									-- route through addSkillRef (Non-Weapon/Skills) or
+									-- addProficiencyDB (Weapon Proficiencies) - without this stamp
+									-- it silently falls through to the weapon-proficiency branch.
+									-- Mirrors what the stock Class record's own nonweaponprof
+									-- handling does (manager_char.lua's addClassRef).
+									DB.setValue(nodeRow, "type", "string", "skills");
+									-- addSkillRef also reads "text" off this row (not the linked
+									-- skill record) for the character's copy of the skill's
+									-- description.
+									DB.setValue(nodeRow, "text", "formattedtext", DB.getValue(nodeSource, "text", ""));
 									return true;
 								end
 							end
