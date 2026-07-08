@@ -25,3 +25,8 @@ folders are git-tracked backups synced with `sync-to-repo.sh`.
   Disadvantage. Roll 2d20 and keep the favorable one, applied to
   attacks, saves, ability checks, and skill checks — correctly inverted
   for 2E's roll-under ability/skill checks.
+- **[2e-target20](extensions/2e-target20/README.md)** — Target 20.
+  Converts roll-under ability/skill checks to a unified `d20 + bonus >= 20`
+  system, using the Player's Option Table 44 ability modifier, character
+  level, and (for skill checks) the skill's own existing modifiers.
+  Composes with `2e-advdis` via a shared `Target20Manager` contract.
