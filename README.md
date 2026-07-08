@@ -21,3 +21,7 @@ folders are git-tracked backups synced with `sync-to-repo.sh`.
   Effects sections to Subrace records (previously Traits-only), applied
   to a character automatically when that subrace is chosen. Also adds
   Non-Weapon Proficiencies to the base Race record itself.
+- **[2e-advdis](extensions/2e-advdis/README.md)** — Advantage &
+  Disadvantage. Roll 2d20 and keep the favorable one, applied to
+  attacks, saves, ability checks, and skill checks — correctly inverted
+  for 2E's roll-under ability/skill checks.

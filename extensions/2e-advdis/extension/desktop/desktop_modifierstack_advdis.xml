@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+  2E ADV/DIS - Advantage & Disadvantage
+  Adds ADV/DIS buttons to the modifier stack, mirroring the existing
+  PLUS1..5/MINUS1..5 pairs already there (2E/desktop/desktop_classes.xml)
+  - anchored to the last pair (PLUS5/MINUS5) the same way each pair
+  anchors to the one before it. button_modifierkey is generic CoreRPG UI
+  that already wires ModifierManager.setKey("ADV"/"DIS", true) on click -
+  no script needed here. The actual roll mechanic (reading these keys and
+  applying them to a roll) lives in scripts/manager_advdis.lua.
+-->
+
+<root>
+	<windowclass name="modifierstack" merge="join">
+		<sheetdata merge="add">
+			<button_modifierkey name="ADV">
+				<anchored to="PLUS5" width="22" height="18">
+					<top offset="-4" />
+					<left anchor="right" relation="relative" offset="6" />
+				</anchored>
+				<text>ADV</text>
+			</button_modifierkey>
+			<button_modifierkey name="DIS">
+				<anchored to="ADV" width="22" height="18">
+					<top anchor="bottom" offset="8" />
+					<left anchor="left" />
+				</anchored>
+				<text>DIS</text>
+			</button_modifierkey>
+		</sheetdata>
+	</windowclass>
+</root>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root version="4.1">
+	<properties>
+		<name>Feature: 2E ADV/DIS - Advantage &amp; Disadvantage</name>
+		<version>1.0</version>
+		<author>Kerry Harrison (sirkerry)</author>
+		<description>Adds Advantage/Disadvantage roll mechanics (roll 2d20, keep the favorable one) to all four 2E d20 roll types - attacks, saves, ability checks, and skill checks - via two new modifier stack buttons. Correctly inverts which die counts as favorable for 2E's roll-under ability/skill checks. No changes to any stock ruleset file.</description>
+		<ruleset>
+			<name>2E</name>
+		</ruleset>
+		<loadorder>10</loadorder>
+	</properties>
+
+	<announcement text="2E ADV/DIS - Advantage &amp; Disadvantage - Version 1.0 by sirkerry" font="emotefont" />
+
+	<base>
+		<includefile source="desktop/desktop_modifierstack_advdis.xml" />
+		<script name="AdvDisManager" file="scripts/manager_advdis.lua" />
+	</base>
+</root>
