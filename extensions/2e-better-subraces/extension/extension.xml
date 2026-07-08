@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root version="4.1">
+	<properties>
+		<name>Feature: 2E Better Subraces</name>
+		<version>1.0</version>
+		<author>Kerry Harrison (sirkerry)</author>
+		<description>Adds Proficiencies and Advanced Effects sections to Subrace records (previously Traits-only), and applies them to a character automatically when that subrace is chosen - matching what already happens for a base Race.</description>
+		<ruleset>
+			<name>2E</name>
+		</ruleset>
+		<loadorder>10</loadorder>
+	</properties>
+
+	<announcement text="2E Better Subraces - Version 1.0 by sirkerry" font="emotefont" />
+
+	<base>
+		<includefile source="campaign/record_subrace_plus.xml" />
+		<script name="SubracePlusManager" file="scripts/manager_subrace_plus.lua" />
+	</base>
+</root>

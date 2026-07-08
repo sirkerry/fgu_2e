@@ -16,3 +16,7 @@ folders are git-tracked backups synced with `sync-to-repo.sh`.
   Replaces the unused Weapon tab on Kit records with a Parcels tab; drag
   Treasure Parcels onto a Kit to link them, applying the Kit to a
   character unpacks every linked Parcel onto them.
+- **[2e-better-subraces](extensions/2e-better-subraces/README.md)** —
+  Adds Proficiencies and Advanced Effects sections to Subrace records
+  (previously Traits-only), applied to a character automatically when
+  that subrace is chosen — matching what a base Race already gets.

@@ -4,7 +4,7 @@ set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FGDATA="${FGDATA:-$HOME/.smiteworks/fgdata}"
-LIVE="$FGDATA/extensions/2e-kpi"
+LIVE="$FGDATA/extensions/2e-better-subraces"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 DEST="$REPO/backups/$STAMP"
 
