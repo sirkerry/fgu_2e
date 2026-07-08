@@ -40,6 +40,9 @@ local function isTarget20Active()
 	return Target20Manager and Target20Manager.isActive and Target20Manager.isActive();
 end
 
+-- onActionPreModRoll is dispatched as (rSource, rTarget, rRoll) - see
+-- manager_actions.lua's applyModifiers. Different signature than
+-- onPreOnRoll below - don't assume they match.
 function onPreModRoll(rSource, rTarget, rRoll)
 	if not ROLL_TYPES[rRoll.sType] or not isSingleD20(rRoll) then
 		return;
@@ -69,7 +72,12 @@ function onPreModRoll(rSource, rTarget, rRoll)
 	end
 end
 
-function onPreOnRoll(rSource, rTarget, rRoll)
+-- onActionPreOnRoll is dispatched as (rSource, rRoll) - NO rTarget, see
+-- manager_actions.lua's handleResolution. Confirmed live 2026-07-08:
+-- assuming the same 3-arg shape as onPreModRoll above put the real
+-- rRoll into rTarget and left rRoll nil, throwing "attempt to index
+-- local 'rRoll' (a nil value)" the first time this actually fired.
+function onPreOnRoll(rSource, rRoll)
 	if not ROLL_TYPES[rRoll.sType] then
 		return;
 	end
