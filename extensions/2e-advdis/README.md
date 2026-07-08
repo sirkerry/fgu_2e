@@ -4,7 +4,7 @@ FGU extension for the official 2E (AD&D 2nd Edition) ruleset.
 
 **FG Forge Listing:** not yet published
 
-Adds Advantage/Disadvantage roll mechanics — roll the die twice, keep the favorable result — to all four 2E roll types: attacks, saves, ability checks, and skill checks, including percentile (d100) ability/skill checks. Also replaces 2E's stock 10-button modifier stack (+1..+5/-1..-5) with a trimmed 6-button layout matching 5E's own (ADV/DIS, +2/-2, +5/-5).
+Adds Advantage/Disadvantage roll mechanics — roll the die twice, keep the favorable result — to all four 2E roll types: attacks, saves, ability checks, and skill checks, including percentile (d100) ability/skill checks. Also restyles 2E's stock 10-button modifier stack (+1..+5/-1..-5) into an 8-button layout: ADV/DIS, +1/-1, +2/-2, +3/-3, +5/-5 (5E-style wider buttons; +4/-4 dropped by choice).
 
 ---
 
@@ -28,14 +28,14 @@ Because `decodeAdvantage()` (the resolution half) only reads the already-set `bA
 
 ## Usage
 
-1. Open the Modifier Stack panel — it now shows 6 buttons total: **ADV**/**DIS**, **+2**/**-2**, **+5**/**-5**, matching 5E's own modifier stack layout. 2E's original **+1**/**-1**, **+3**/**-3**, **+4**/**-4** buttons are removed (`merge="delete"` on those named controls — confirmed surgical against several stock examples, unlike `<tab merge="delete">`, which wipes an entire tab list instead of one tab).
+1. Open the Modifier Stack panel — it now shows 8 buttons total, in this order: **ADV**/**DIS**, **+1**/**-1**, **+2**/**-2**, **+3**/**-3**, **+5**/**-5**. Only **+4**/**-4** is removed from 2E's original 10 (`merge="delete"` on those two named controls — confirmed surgical against several stock examples, unlike `<tab merge="delete">`, which wipes an entire tab list instead of one tab).
 2. Click ADV or DIS before making a roll (or drag the button to your hotkey bar, same as the existing modifier buttons).
 3. Make any attack, save, ability check, or skill check roll as normal — including percentile (d100) ability/skill checks. The chat log will show both dice, with the dropped one greyed out and the kept one tagged `[ADV]` or `[DIS]`.
 4. For ability/skill checks specifically, Advantage keeps the *lower* roll (since lower succeeds in 2E) — the chat tag still correctly reads `[ADV]`, matching what you clicked, even though internally a different die is kept than it would be for an attack roll.
 
-### Why Only 6 Buttons
+### Layout Notes
 
-2E's stock modifier stack has 5 pairs (+1 through +5). Adding ADV/DIS as a 6th pair alongside all 10 existing buttons made for a cramped, hard-to-scan panel, and ADV/DIS at 2E's original 22px button width didn't have room to render "ADV"/"DIS" text cleanly (2E's buttons are sized for 2-character labels like "+1"). Rather than shrink the text or widen every button, this mirrors 5E's own modifier stack exactly: 3 pairs, wider (30px) buttons, ADV/DIS first since it's the most commonly used one.
+ADV/DIS use 5E's own wider button size (30px, vs 2E's original 22px, which didn't have room for 3-letter text) and sit first, before the numeric modifier buttons, since it's the most commonly used pair. +1/-1 needed a small anchor fix beyond just re-adding it: its stock horizontal offset (17px) was tuned specifically for sitting right next to the wide "Modifier" number field — now that ADV/DIS occupies that spot instead, +1/-1 needed the same offset (6px) every other numeric button pair already uses. +2/+3/+5 needed no changes at all — their anchors cascade based on document/render order, not the literal control name they reference, so re-ordering the sheetdata was enough on its own.
 
 ## Compatibility
 

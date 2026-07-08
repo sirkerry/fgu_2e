@@ -3,22 +3,29 @@
 <!--
   2E ADV/DIS - Advantage & Disadvantage
   Replaces 2E's stock 5-pair modifier stack (+1..+5/-1..-5, 10 buttons)
-  with a trimmed 3-pair layout matching 5E's own modifier stack: ADV/DIS,
-  +2/-2, +5/-5 (6 buttons total). +1/-1, +3/-3, +4/-4 are removed.
+  with an 8-button layout matching 5E's own style: ADV/DIS, +1/-1,
+  +2/-2, +3/-3, +5/-5. +4/-4 is deliberately left out (user's own call).
 
   merge="delete" on a NAMED sheetdata control is surgical (confirmed
   against many stock examples, e.g. 2E/ps/ps_xp.xml, ICRPG/campaign/
   record_npc.xml) - unlike <tab merge="delete">, which wipes the entire
-  inherited tab list. Deleting PLUS1/MINUS1/PLUS3/MINUS3/PLUS4/MINUS4
-  here leaves PLUS2/MINUS2/PLUS5/MINUS5 completely untouched.
+  inherited tab list. Deleting only PLUS4/MINUS4 here leaves
+  PLUS1/MINUS1/PLUS2/MINUS2/PLUS3/MINUS3/PLUS5/MINUS5 completely
+  untouched.
 
   ADV/DIS use 5E's own button width (30px, vs 2E's original 22px, which
-  is too narrow for 3-letter text) and are inserted first, before the
-  kept PLUS2/MINUS2. PLUS2/PLUS5 need no anchor changes themselves:
-  their existing "relation=relative" left-anchor cascades based on
-  document/render order, not the literal "to=" name - confirmed by the
-  stock layout itself, where PLUS2 through PLUS5 all say to="modifier"
-  yet already render left-to-right in sequence without overlap.
+  is too narrow for 3-letter text) and are inserted first via
+  insertbefore="PLUS1", ahead of every kept stock pair. PLUS2/PLUS3/PLUS5
+  need no anchor changes themselves: their existing "relation=relative"
+  left-anchor cascades based on document/render order, not the literal
+  "to=" name - confirmed by the stock layout itself, where PLUS2 through
+  PLUS5 all say to="modifier" yet already render left-to-right in
+  sequence without overlap. PLUS1 DOES need its own anchor patched,
+  though: its stock offset (17, vs everyone else's 6) was specifically
+  tuned for sitting directly next to the wider "modifier" number field -
+  now that ADV/DIS sits there instead and PLUS1 comes after DIS (a
+  normal-width button), it needs the same offset=6 every other button
+  in the row uses.
 
   button_modifierkey is generic CoreRPG UI that already wires
   ModifierManager.setKey("ADV"/"DIS", true) on click - no script needed
@@ -28,26 +35,29 @@
 <root>
 	<windowclass name="modifierstack" merge="join">
 		<sheetdata merge="join">
-			<button_modifierkey name="PLUS1" merge="delete" />
-			<button_modifierkey name="MINUS1" merge="delete" />
-			<button_modifierkey name="PLUS3" merge="delete" />
-			<button_modifierkey name="MINUS3" merge="delete" />
 			<button_modifierkey name="PLUS4" merge="delete" />
 			<button_modifierkey name="MINUS4" merge="delete" />
 
-			<button_modifierkey name="ADV" insertbefore="PLUS2">
+			<button_modifierkey name="ADV" insertbefore="PLUS1">
 				<anchored to="modifier" width="30" height="18">
 					<top offset="-4" />
 					<left anchor="right" relation="relative" offset="17" />
 				</anchored>
 				<text>ADV</text>
 			</button_modifierkey>
-			<button_modifierkey name="DIS" insertbefore="PLUS2">
+			<button_modifierkey name="DIS" insertbefore="PLUS1">
 				<anchored to="ADV" width="30" height="18">
 					<top anchor="bottom" offset="8" />
 					<left anchor="left" />
 				</anchored>
 				<text>DIS</text>
+			</button_modifierkey>
+
+			<button_modifierkey name="PLUS1" merge="join">
+				<anchored to="modifier" width="22" height="18">
+					<top offset="-4" />
+					<left anchor="right" relation="relative" offset="6" />
+				</anchored>
 			</button_modifierkey>
 		</sheetdata>
 	</windowclass>
