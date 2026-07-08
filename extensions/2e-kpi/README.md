@@ -1,5 +1,7 @@
 # 2E KPI — Kits, Parcels, and Items
 
+**FG Forge Listing:** not yet published
+
 FGU extension for the official 2E (AD&D 2nd Edition) ruleset.
 
 Replaces the unused Weapon tab on Kit records (Warrior Kits / Backgrounds)
