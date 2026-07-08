@@ -62,19 +62,17 @@
 	  script at all before (nothing to collide with), and this fixes it
 	  for both the Race/Subrace usage AND the original Class usage.
 
-	  Separately: link_listitem_left has no onDrop of its own anywhere in
-	  CoreRPG - class-matching a dropped shortcut is native/compiled
-	  behavior, but nothing copies the dropped record's name onto the
-	  row's own visible "name" field (confirmed by comparing against
-	  reference_racialproficiency, which is a pure freeform-text stub
-	  with no real draggable source at all - not a bug, just never a
-	  real workflow - versus reference_skill, which IS a real, correctly
-	  classed, draggable library record). So a Skill drop was likely
-	  registering at the native level but never visibly updating the
-	  row. Fixed by adding an explicit onDrop to the shortcut control
-	  itself, mirroring the working pattern in the stock ruleset's own
-	  record_power.xml (copy name across, set the link explicitly, don't
-	  rely on undocumented native behavior).
+	  Separately: dragging a Skill record onto one of these rows silently
+	  did nothing. Confirmed via a temporary diagnostic (ChatManager.
+	  SystemMessage in onDrop at three levels - the row, the shortcut
+	  icon, and the name field) that the drop actually lands on the
+	  "name" string field, not the small shortcut icon - the icon is a
+	  tiny fixed-width control, while "name" occupies the rest of the
+	  row's width, so that's where a real drag lands in practice. Fixed
+	  by adding an onDrop to the "name" field itself (not the shortcut
+	  control) that copies the dropped record's name across and sets the
+	  underlying link, mirroring the working pattern in the stock
+	  ruleset's own record_power.xml.
 	-->
 	<windowclass name="ref_nonweapon_proficiency" merge="join">
 		<script>
@@ -86,7 +84,7 @@
 			end
 		</script>
 		<sheetdata merge="join">
-			<link_listitem_left name="shortcut" merge="join">
+			<string_listitem_center_bold name="name" merge="join">
 				<script>
 					function onDrop(x, y, draginfo)
 						if draginfo.isType("shortcut") then
@@ -103,7 +101,7 @@
 						end
 					end
 				</script>
-			</link_listitem_left>
+			</string_listitem_center_bold>
 		</sheetdata>
 	</windowclass>
 
