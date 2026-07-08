@@ -35,18 +35,43 @@
 			end
 		</script>
 		<sheetdata merge="add">
-			<header_content_framed_headersimple name="nonweaponprof_header">
+			<header_content_framed_headersimple name="nonweaponprof_header" insertbefore="advancedeffectstitle">
 				<static textres="class_header_nonweaponproficiencies" />
 			</header_content_framed_headersimple>
-			<button_iadd name="nonweaponprof_iadd">
+			<button_iadd name="nonweaponprof_iadd" insertbefore="advancedeffectstitle">
 				<anchored to="nonweaponprof_header" position="righthigh" offset="-20,0" />
 				<target>nonweaponprof</target>
 			</button_iadd>
-			<list_content_alternating_top name="nonweaponprof">
+			<list_content_alternating_top name="nonweaponprof" insertbefore="advancedeffectstitle">
 				<datasource>.nonweaponprof</datasource>
 				<class>ref_nonweapon_proficiency</class>
 			</list_content_alternating_top>
 		</sheetdata>
+	</windowclass>
+
+	<!--
+	  ref_nonweapon_proficiency (defined in the stock ruleset for Class
+	  records) has no onInit/onLockModeChanged of its own - on Class
+	  records it works because it lives inside a list_column, whose
+	  built-in column_list.lua script automatically drives idelete
+	  visibility/readonly state and drag-drop for every row via a
+	  sibling button_iedit. Race/Subrace use list_content_alternating_top
+	  instead (matching their other sections' look), which does none of
+	  that automatically - so this row's controls were left unresolved
+	  (odd icon, non-functional drag-drop) without an explicit lock-mode
+	  pairing of its own. Safe to add here since it had no script at all
+	  before (nothing to collide with), and this fixes it for both the
+	  Race/Subrace usage AND the original Class usage.
+	-->
+	<windowclass name="ref_nonweapon_proficiency" merge="join">
+		<script>
+			function onInit()
+				self.onLockModeChanged(WindowManager.getWindowReadOnlyState(self));
+			end
+			function onLockModeChanged(bReadOnly)
+				WindowManager.callSafeControlsSetLockMode(self, { "name", "idelete", }, bReadOnly);
+			end
+		</script>
 	</windowclass>
 
 	<windowclass name="reference_subrace_main" merge="join">
