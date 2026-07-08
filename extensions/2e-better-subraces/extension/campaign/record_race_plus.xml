@@ -121,6 +121,16 @@
 									-- skill record) for the character's copy of the skill's
 									-- description.
 									DB.setValue(nodeRow, "text", "formattedtext", DB.getValue(nodeSource, "text", ""));
+									-- addSkillDB (called by addSkillRef) copies the character's
+									-- new skill entry via a blind DB.copyNode(nodeSource, nodeSkill)
+									-- where nodeSource is, again, THIS ROW - so the character's
+									-- skill entry only gets whatever fields this row itself has.
+									-- Without copying these across too, the skill lands on the
+									-- character with no ability-score association or base check
+									-- value at all (blank "Type" dropdown).
+									DB.setValue(nodeRow, "stat", "string", DB.getValue(nodeSource, "stat", ""));
+									DB.setValue(nodeRow, "base_check", "number", DB.getValue(nodeSource, "base_check", 0));
+									DB.setValue(nodeRow, "adj_mod", "number", DB.getValue(nodeSource, "adj_mod", 0));
 									return true;
 								end
 							end
