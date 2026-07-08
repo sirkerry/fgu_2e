@@ -1,5 +1,7 @@
 # 2E BRS - Better Races & Subraces
 
+![2E BRS](forge/2e-brs.png)
+
 FGU extension for the official 2E (AD&D 2nd Edition) ruleset.
 
 **FG Forge Listing:** not yet published
