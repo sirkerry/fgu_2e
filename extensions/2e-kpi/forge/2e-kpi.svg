@@ -23,9 +23,9 @@
     <circle class="rivet" cx="0" cy="285" r="9"/>
 
     <!-- 2E emblem -->
-    <text x="0" y="90" font-family="serif" font-weight="700" font-size="220" fill="#e8c96a" text-anchor="middle">2E</text>
+    <text x="0" y="-10" font-family="serif" font-weight="700" font-size="220" fill="#e8c96a" text-anchor="middle">2E</text>
 
     <!-- Text -->
-    <text class="sub-text" x="0" y="170" font-size="24" text-anchor="middle" letter-spacing="10">KPI</text>
+    <text class="sub-text" x="0" y="170" font-size="44" text-anchor="middle" letter-spacing="10">KPI</text>
   </g>
 </svg>
