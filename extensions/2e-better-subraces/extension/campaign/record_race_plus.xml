@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+  2E Better Subraces
+  - Adds Proficiencies and Advanced Effects sections to Subrace records,
+    mirroring the sections a base Race already has (reference_race_main
+    in the stock ruleset's campaign/record_race.xml). Subraces previously
+    only had a Traits list.
+  - Adds a Non-Weapon Proficiencies (Skills) section to BOTH Race and
+    Subrace records. The stock addRaceSelect (manager_char.lua) already
+    reads a "nonweaponprof" child list off the base Race and applies it
+    to the character - there was just never any UI to author it, so it
+    was dead code. This reuses the exact same list-row class the Class
+    record's own working Non-Weapon Proficiencies section uses
+    (ref_nonweapon_proficiency, linking reference_skill records) rather
+    than the class record's slot/earn-rate mechanic, which doesn't apply
+    to races (races grant specific named proficiencies directly, same as
+    the existing weapon Proficiencies section already does).
+  The character-apply side for Subrace (making its own proficiencies/
+  effects/nonweaponprof actually apply when that subrace is chosen) is
+  handled in scripts/manager_subrace_plus.lua. The base Race side needs
+  no Lua changes at all - the stock function already applies it once the
+  data exists.
+-->
+
+<root>
+	<windowclass name="reference_race_main" merge="join">
+		<script>
+			function onInit()
+				self.onLockModeChanged(WindowManager.getWindowReadOnlyState(self));
+			end
+			function onLockModeChanged(bReadOnly)
+				local tFields = { "subraces_iadd", "traits_iadd", "proficiencies_iadd", "nonweaponprof_iadd", "effects_list_iadd", };
+				WindowManager.callSafeControlsSetLockMode(self, tFields, bReadOnly);
+			end
+		</script>
+		<sheetdata merge="add">
+			<header_content_framed_headersimple name="nonweaponprof_header">
+				<static textres="class_header_nonweaponproficiencies" />
+			</header_content_framed_headersimple>
+			<button_iadd name="nonweaponprof_iadd">
+				<anchored to="nonweaponprof_header" position="righthigh" offset="-20,0" />
+				<target>nonweaponprof</target>
+			</button_iadd>
+			<list_content_alternating_top name="nonweaponprof">
+				<datasource>.nonweaponprof</datasource>
+				<class>ref_nonweapon_proficiency</class>
+			</list_content_alternating_top>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="reference_subrace_main" merge="join">
+		<script>
+			function onInit()
+				self.onLockModeChanged(WindowManager.getWindowReadOnlyState(self));
+			end
+			function onLockModeChanged(bReadOnly)
+				local tFields = { "traits_iadd", "proficiencies_iadd", "nonweaponprof_iadd", "effects_list_iadd", };
+				WindowManager.callSafeControlsSetLockMode(self, tFields, bReadOnly);
+			end
+		</script>
+		<sheetdata merge="add">
+			<header_content_framed_headersimple name="proficiencies_header">
+				<static textres="race_header_proficiencies" />
+			</header_content_framed_headersimple>
+			<button_iadd name="proficiencies_iadd">
+				<anchored to="proficiencies_header" position="righthigh" offset="-20,0" />
+				<target>proficiencies</target>
+			</button_iadd>
+			<list_content_alternating_top name="proficiencies">
+				<datasource>.proficiencies</datasource>
+				<class>ref_racial_proficiencies</class>
+			</list_content_alternating_top>
+
+			<header_content_framed_headersimple name="nonweaponprof_header">
+				<static textres="class_header_nonweaponproficiencies" />
+			</header_content_framed_headersimple>
+			<button_iadd name="nonweaponprof_iadd">
+				<anchored to="nonweaponprof_header" position="righthigh" offset="-20,0" />
+				<target>nonweaponprof</target>
+			</button_iadd>
+			<list_content_alternating_top name="nonweaponprof">
+				<datasource>.nonweaponprof</datasource>
+				<class>ref_nonweapon_proficiency</class>
+			</list_content_alternating_top>
+
+			<header_content_framed_headersimple name="advancedeffectstitle">
+				<static textres="char_abilities_label_advancedeffects" />
+			</header_content_framed_headersimple>
+			<button_iadd name="effects_list_iadd">
+				<anchored to="advancedeffectstitle" position="insidetopright" offset="-5,0" />
+				<target>effects_list</target>
+			</button_iadd>
+			<list_content_alternating_top name="effects_list">
+				<datasource>.effectlist</datasource>
+				<class>advanced_effects_entry2</class>
+			</list_content_alternating_top>
+		</sheetdata>
+	</windowclass>
+</root>
