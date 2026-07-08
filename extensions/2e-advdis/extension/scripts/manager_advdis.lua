@@ -7,13 +7,22 @@
 -- dispatched via GameManager's "" wildcard subkey) - no stock 2E file
 -- needs editing.
 --
--- The actual "roll 2d20, keep the favorable one" mechanic is generic
--- CoreRPG code already (ActionD20.encodeAdvantage/decodeAdvantage), not
--- reimplemented here. The one thing 2E needs that CoreRPG's own version
--- doesn't provide: ability/skill checks in 2E are roll-UNDER (a lower
--- roll succeeds), the opposite of every roll type CoreRPG/5E assume
--- ("advantage" = keep the higher die). For those two roll types, this
--- keeps the LOWER of the two d20s on Advantage instead.
+-- The actual "roll the die twice, keep the favorable one" mechanic is
+-- generic CoreRPG code already (ActionD20.encodeAdvantage/decodeAdvantage),
+-- not reimplemented here - it duplicates whatever aDice[1] is and
+-- compares the two rolled results, with no dependency on die type, so
+-- it works identically for d20 or d100 (percentile) rolls. (2E also has
+-- percentile-style ability checks, e.g. Strength open-doors % - the
+-- "reverse" ones just pre-transform the target via 100-value before
+-- rolling; the actual roll comparison is still the same roll-under
+-- test as everything else, so no special-casing needed for those.)
+--
+-- The one thing 2E needs that CoreRPG's own version doesn't provide:
+-- ability/skill checks in 2E are roll-UNDER (a lower roll succeeds),
+-- the opposite of every roll type CoreRPG/5E assume ("advantage" = keep
+-- the higher die). For those two roll types, this keeps the LOWER of
+-- the two dice on Advantage instead - regardless of whether the dice
+-- involved are d20 or d100.
 --
 
 local ROLL_TYPES = { attack = true, save = true, check = true, skill = true };
@@ -23,8 +32,15 @@ function onInit()
 	GameManager.setMultiKeyFunction("onActionPreOnRoll", "", onPreOnRoll);
 end
 
-local function isSingleD20(rRoll)
-	return rRoll.aDice and #(rRoll.aDice) == 1 and rRoll.aDice[1].type == "d20";
+-- ADV/DIS applies to any roll made of exactly one d20 or d100 die -
+-- CoreRPG's encodeAdvantage/decodeAdvantage duplicate/compare whatever
+-- die type is present, with no d20-specific assumption baked in.
+local function isSingleAdvDisDie(rRoll)
+	if not (rRoll.aDice and #(rRoll.aDice) == 1) then
+		return false;
+	end
+	local sType = rRoll.aDice[1].type;
+	return sType == "d20" or sType == "d100";
 end
 
 local function isRollUnderType(rRoll)
@@ -48,16 +64,16 @@ function onPreModRoll(rSource, rTarget, rRoll)
 		return;
 	end
 
-	if not isSingleD20(rRoll) then
-		-- Percentile skill checks (d100) are one of our 4 roll types but
-		-- can't take the "duplicate the die" mechanic - there's no
-		-- sensible way to apply it to a d100. Still consume the ADV/DIS
-		-- keys here (read-only, no die changes) so the button releases
-		-- from its pressed state instead of getting stuck "on" after a
-		-- % roll - confirmed live 2026-07-08: without this, clicking
-		-- ADV/DIS before a % skill check left the button visually
-		-- depressed forever, since nothing ever read the key to clear
-		-- it. Deliberately NOT consumed for action types outside
+	if not isSingleAdvDisDie(rRoll) then
+		-- Some roll of one of our 4 types didn't come out as a single
+		-- d20/d100 die (unexpected today, but keep this defensive rather
+		-- than erroring). Still consume the ADV/DIS keys here (read-only,
+		-- no die changes) so the button releases from its pressed state
+		-- instead of getting stuck "on" - confirmed live 2026-07-08 for
+		-- the (now-handled) percentile-skill case: without this, clicking
+		-- ADV/DIS before a roll that didn't match left the button
+		-- visually depressed forever, since nothing ever read the key to
+		-- clear it. Deliberately NOT consumed for action types outside
 		-- ROLL_TYPES (damage, heal, init, etc.) - the early return above
 		-- already skips those - so a pending ADV/DIS click survives
 		-- until an actual attack/save/check/skill roll happens.

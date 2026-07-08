@@ -4,7 +4,7 @@ FGU extension for the official 2E (AD&D 2nd Edition) ruleset.
 
 **FG Forge Listing:** not yet published
 
-Adds Advantage/Disadvantage roll mechanics — roll 2d20, keep the favorable one — to all four 2E d20 roll types: attacks, saves, ability checks, and skill checks. Also replaces 2E's stock 10-button modifier stack (+1..+5/-1..-5) with a trimmed 6-button layout matching 5E's own (ADV/DIS, +2/-2, +5/-5).
+Adds Advantage/Disadvantage roll mechanics — roll the die twice, keep the favorable result — to all four 2E roll types: attacks, saves, ability checks, and skill checks, including percentile (d100) ability/skill checks. Also replaces 2E's stock 10-button modifier stack (+1..+5/-1..-5) with a trimmed 6-button layout matching 5E's own (ADV/DIS, +2/-2, +5/-5).
 
 ---
 
@@ -14,11 +14,13 @@ This was originally considered as one combined extension with a planned "Target 
 
 ## How It Works
 
-**The mechanic itself is not reimplemented** — CoreRPG already has a fully generic "roll 2d20, keep the favorable one" implementation (`ActionD20.encodeAdvantage`/`decodeAdvantage` in `manager_action_d20.lua`), the same code 5E's own Advantage/Disadvantage runs on. It's available to any ruleset built on CoreRPG, including 2E, with zero 5E dependency.
+**The mechanic itself is not reimplemented** — CoreRPG already has a fully generic "roll the die twice, keep the favorable one" implementation (`ActionD20.encodeAdvantage`/`decodeAdvantage` in `manager_action_d20.lua`), the same code 5E's own Advantage/Disadvantage runs on. It duplicates whatever `aDice[1]` happens to be and compares the two rolled results — no dependency on die type baked in — so it works identically for d20 or d100 rolls. It's available to any ruleset built on CoreRPG, including 2E, with zero 5E dependency.
+
+**Percentile (d100) rolls are supported too**, deliberately using this same "roll twice, keep favorable" method rather than d100-specific alternatives like Tens-Die-Only substitution or digit flipping — simplest to reason about and consistent with how every other roll type here works. This also covers 2E's "reverse" percentile ability checks (e.g. Strength open-doors %) correctly without any special-casing: those pre-transform the target via `100 - value` before rolling, but the actual roll comparison is still the same roll-under test as everything else, so they fall under the same roll-under handling described below.
 
 **The hook point is also already generic.** Every 2E roll type (attack, save, ability check, skill check) funnels through the same CoreRPG roll engine (`ActionsManager.performAction`), which fires wildcard extension hooks (`onActionPreModRoll`/`onActionPreOnRoll` via `GameManager.setMultiKeyFunction(..., "", fn)`) before/after every single roll of every type, regardless of ruleset. This extension registers exactly two such hooks in `onInit` — nothing in any stock 2E file needs to be touched at all.
 
-**The one thing 2E actually needs that doesn't come for free:** ability and skill checks in 2E are roll-UNDER (rolling lower succeeds), the opposite of every roll type 5E/CoreRPG assume ("advantage" always means "keep the higher die" in the stock implementation). For those two roll types specifically, this extension keeps the **lower** of the two d20s on Advantage instead — mechanically correct, but with one real gotcha:
+**The one thing 2E actually needs that doesn't come for free:** ability and skill checks in 2E are roll-UNDER (rolling lower succeeds), the opposite of every roll type 5E/CoreRPG assume ("advantage" always means "keep the higher die" in the stock implementation). For those two roll types specifically (d20 or d100 alike), this extension keeps the **lower** die on Advantage instead — mechanically correct, but with one real gotcha:
 
 > `ModifierManager.getKey(sKey)` is **not idempotent** — reading it consumes/clears the toggle. This extension can't just read the ADV/DIS keys, swap them, and then also call the stock `ActionD20.encodeAdvantage()` — that function does its own separate `getKey()` read, which would find the keys already cleared by the first read and silently do nothing. Instead, for roll-under checks/skills, this extension reads both raw keys itself exactly once, swaps them, and replicates `encodeAdvantage`'s small amount of die-duplication logic directly. If this code is ever "simplified" back to calling `encodeAdvantage()` unconditionally, Advantage/Disadvantage will silently stop working on ability/skill checks specifically — this is the one thing to be careful about if touching `manager_advdis.lua` later.
 
@@ -28,7 +30,7 @@ Because `decodeAdvantage()` (the resolution half) only reads the already-set `bA
 
 1. Open the Modifier Stack panel — it now shows 6 buttons total: **ADV**/**DIS**, **+2**/**-2**, **+5**/**-5**, matching 5E's own modifier stack layout. 2E's original **+1**/**-1**, **+3**/**-3**, **+4**/**-4** buttons are removed (`merge="delete"` on those named controls — confirmed surgical against several stock examples, unlike `<tab merge="delete">`, which wipes an entire tab list instead of one tab).
 2. Click ADV or DIS before making a roll (or drag the button to your hotkey bar, same as the existing modifier buttons).
-3. Make any attack, save, ability check, or skill check roll as normal. The chat log will show both d20s, with the dropped one greyed out and the kept one tagged `[ADV]` or `[DIS]`.
+3. Make any attack, save, ability check, or skill check roll as normal — including percentile (d100) ability/skill checks. The chat log will show both dice, with the dropped one greyed out and the kept one tagged `[ADV]` or `[DIS]`.
 4. For ability/skill checks specifically, Advantage keeps the *lower* roll (since lower succeeds in 2E) — the chat tag still correctly reads `[ADV]`, matching what you clicked, even though internally a different die is kept than it would be for an attack roll.
 
 ### Why Only 6 Buttons
@@ -39,7 +41,7 @@ Because `decodeAdvantage()` (the resolution half) only reads the already-set `bA
 
 - Official 2E (AD&D 2nd Edition) ruleset
 - Purely additive — no stock ruleset file is edited; hooks are registered via CoreRPG's own generic wildcard extension points
-- Compatible with `AD&D Options and House Rules.ext`'s "Ability Check Dice" option (1d20/3d6/4d6): this extension only affects rolls with exactly one `d20` die, so it automatically and safely does nothing when that option is set to 3d6/4d6 for ability checks — no special-case code needed
+- Compatible with `AD&D Options and House Rules.ext`'s "Ability Check Dice" option (1d20/3d6/4d6): this extension only affects rolls with exactly one `d20` or `d100` die, so it automatically and safely does nothing when that option is set to 3d6/4d6 for ability checks — no special-case code needed
 - Designed to compose with a future Target 20 extension via a defensive `Target20Manager.isActive()` check (not required to be installed)
 
 ## Installation
