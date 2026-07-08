@@ -1,5 +1,7 @@
 # 2E ADV/DIS - Advantage & Disadvantage
 
+![2E ADV/DIS](forge/2e-advdis.png)
+
 FGU extension for the official 2E (AD&D 2nd Edition) ruleset.
 
 **FG Forge Listing:** not yet published
