@@ -54,14 +54,27 @@
 	  records) has no onInit/onLockModeChanged of its own - on Class
 	  records it works because it lives inside a list_column, whose
 	  built-in column_list.lua script automatically drives idelete
-	  visibility/readonly state and drag-drop for every row via a
-	  sibling button_iedit. Race/Subrace use list_content_alternating_top
-	  instead (matching their other sections' look), which does none of
-	  that automatically - so this row's controls were left unresolved
-	  (odd icon, non-functional drag-drop) without an explicit lock-mode
-	  pairing of its own. Safe to add here since it had no script at all
-	  before (nothing to collide with), and this fixes it for both the
-	  Race/Subrace usage AND the original Class usage.
+	  visibility/readonly state for every row via a sibling button_iedit.
+	  Race/Subrace use list_content_alternating_top instead (matching
+	  their other sections' look), which does none of that automatically
+	  - so idelete was left unresolved (odd icon) without an explicit
+	  lock-mode pairing of its own. Safe to add here since it had no
+	  script at all before (nothing to collide with), and this fixes it
+	  for both the Race/Subrace usage AND the original Class usage.
+
+	  Separately: link_listitem_left has no onDrop of its own anywhere in
+	  CoreRPG - class-matching a dropped shortcut is native/compiled
+	  behavior, but nothing copies the dropped record's name onto the
+	  row's own visible "name" field (confirmed by comparing against
+	  reference_racialproficiency, which is a pure freeform-text stub
+	  with no real draggable source at all - not a bug, just never a
+	  real workflow - versus reference_skill, which IS a real, correctly
+	  classed, draggable library record). So a Skill drop was likely
+	  registering at the native level but never visibly updating the
+	  row. Fixed by adding an explicit onDrop to the shortcut control
+	  itself, mirroring the working pattern in the stock ruleset's own
+	  record_power.xml (copy name across, set the link explicitly, don't
+	  rely on undocumented native behavior).
 	-->
 	<windowclass name="ref_nonweapon_proficiency" merge="join">
 		<script>
@@ -72,6 +85,26 @@
 				WindowManager.callSafeControlsSetLockMode(self, { "name", "idelete", }, bReadOnly);
 			end
 		</script>
+		<sheetdata merge="join">
+			<link_listitem_left name="shortcut" merge="join">
+				<script>
+					function onDrop(x, y, draginfo)
+						if draginfo.isType("shortcut") then
+							local sClass, sRecord = draginfo.getShortcutData();
+							if sClass == "reference_skill" then
+								local nodeSource = DB.findNode(sRecord);
+								if nodeSource then
+									local nodeRow = window.getDatabaseNode();
+									DB.setValue(nodeRow, "shortcut", "windowreference", sClass, sRecord);
+									DB.setValue(nodeRow, "name", "string", DB.getValue(nodeSource, "name", ""));
+									return true;
+								end
+							end
+						end
+					end
+				</script>
+			</link_listitem_left>
+		</sheetdata>
 	</windowclass>
 
 	<windowclass name="reference_subrace_main" merge="join">
