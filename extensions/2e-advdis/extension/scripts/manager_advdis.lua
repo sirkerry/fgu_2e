@@ -44,7 +44,25 @@ end
 -- manager_actions.lua's applyModifiers. Different signature than
 -- onPreOnRoll below - don't assume they match.
 function onPreModRoll(rSource, rTarget, rRoll)
-	if not ROLL_TYPES[rRoll.sType] or not isSingleD20(rRoll) then
+	if not ROLL_TYPES[rRoll.sType] then
+		return;
+	end
+
+	if not isSingleD20(rRoll) then
+		-- Percentile skill checks (d100) are one of our 4 roll types but
+		-- can't take the "duplicate the die" mechanic - there's no
+		-- sensible way to apply it to a d100. Still consume the ADV/DIS
+		-- keys here (read-only, no die changes) so the button releases
+		-- from its pressed state instead of getting stuck "on" after a
+		-- % roll - confirmed live 2026-07-08: without this, clicking
+		-- ADV/DIS before a % skill check left the button visually
+		-- depressed forever, since nothing ever read the key to clear
+		-- it. Deliberately NOT consumed for action types outside
+		-- ROLL_TYPES (damage, heal, init, etc.) - the early return above
+		-- already skips those - so a pending ADV/DIS click survives
+		-- until an actual attack/save/check/skill roll happens.
+		ModifierManager.getKey("ADV");
+		ModifierManager.getKey("DIS");
 		return;
 	end
 
