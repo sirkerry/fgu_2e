@@ -7,7 +7,7 @@ set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FGDATA="${FGDATA:-$HOME/.smiteworks/fgdata}"
-LIVE="$FGDATA/extensions/2e-better-subraces"
+LIVE="$FGDATA/extensions/2e-brs"
 DIST="$REPO/dist"
 
 if [ ! -d "$LIVE" ]; then
@@ -15,7 +15,7 @@ if [ ! -d "$LIVE" ]; then
 	exit 1
 fi
 
-OUT="$DIST/2e-better-subraces.ext"
+OUT="$DIST/2e-brs.ext"
 
 mkdir -p "$DIST"
 rm -f "$OUT"

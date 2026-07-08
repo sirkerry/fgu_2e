@@ -1,4 +1,4 @@
-# 2E Better Subraces
+# 2E BRS - Better Races & Subraces
 
 FGU extension for the official 2E (AD&D 2nd Edition) ruleset.
 
@@ -45,4 +45,4 @@ All of these reuse the base Race's/Class's existing record types rather than min
 
 ## Installation
 
-Drop the `2e-better-subraces` folder into your Fantasy Grounds Unity `extensions/` directory and enable it when loading a 2E campaign.
+Drop the `2e-brs` folder into your Fantasy Grounds Unity `extensions/` directory and enable it when loading a 2E campaign.
