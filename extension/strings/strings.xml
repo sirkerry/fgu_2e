@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<root>
+	<string name="kpi_tab_parcels">Parcels</string>
+	<string name="kpi_label_parcels">Parcels</string>
+	<string name="kpi_emptylist_parcels">&#171; Drop a Treasure Parcel &#187;</string>
+</root>

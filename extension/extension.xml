@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root version="4.1">
+	<properties>
+		<name>Feature: 2E KPI - Kits, Parcels, and Items</name>
+		<version>1.0</version>
+		<author>Kerry Harrison (sirkerry)</author>
+		<description>Replaces the unused Weapon tab on Kits (Warrior Kits / Backgrounds) with a Parcels tab. Drag Treasure Parcels directly onto a Kit to link them (drag the same Parcel on twice for multiple copies); dropping the Kit onto a character unpacks every linked Parcel onto the character, granting its items and coin.</description>
+		<ruleset>
+			<name>2E</name>
+		</ruleset>
+		<loadorder>10</loadorder>
+	</properties>
+
+	<announcement text="2E KPI (Kits, Parcels, and Items) - Version 1.0 by sirkerry" font="emotefont" />
+
+	<base>
+		<includefile source="strings/strings.xml" />
+		<includefile source="campaign/record_background_parcels.xml" />
+		<script name="KPIManager" file="scripts/manager_kpi.lua" />
+	</base>
+</root>
