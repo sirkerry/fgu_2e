@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root version="4.1">
+	<properties>
+		<name>Feature: 2E - Exploding Damage</name>
+		<version>1.0</version>
+		<author>Kerry Harrison (sirkerry)</author>
+		<description>Classic exploding-dice house rule for all 2E damage rolls (weapons and spells): when a damage die rolls its maximum value, it rerolls and adds, repeating if it explodes again. Uses FGU's native compound-explode die mode, no custom reroll logic.</description>
+		<ruleset>
+			<name>2E</name>
+		</ruleset>
+		<loadorder>10</loadorder>
+	</properties>
+
+	<announcement text="2E - Exploding Damage - Version 1.0 by sirkerry" font="emotefont" />
+
+	<base>
+		<script name="ExplosiveDamageManager" file="scripts/manager_explosivedmg.lua" />
+	</base>
+</root>

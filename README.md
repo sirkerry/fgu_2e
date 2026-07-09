@@ -30,3 +30,8 @@ folders are git-tracked backups synced with `sync-to-repo.sh`.
   system, using the Player's Option Table 44 ability modifier, character
   level, and (for skill checks) the skill's own existing modifiers.
   Composes with `2e-advdis` via a shared `Target20Manager` contract.
+- **[2e-expdmg](extensions/2e-expdmg/README.md)** — Exploding Damage.
+  Classic exploding-dice house rule for all damage rolls (weapons
+  and spells): a die that rolls its maximum value rerolls and adds,
+  chaining on further explosions, using FGU's native compound-explode die
+  mode.
