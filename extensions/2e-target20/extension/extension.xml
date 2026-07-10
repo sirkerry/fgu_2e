@@ -2,7 +2,7 @@
 <root version="4.1">
 	<properties>
 		<name>Feature: 2E Target 20</name>
-		<version>1.0</version>
+		<version>1.1</version>
 		<author>Kerry Harrison (sirkerry)</author>
 		<description>Converts 2E's roll-under ability and skill checks to a unified d20 + bonus >= 20 system. Ability checks: d20 + Table 44 ability modifier (Player's Option: Skills and Powers p.89) + character level. Skill/proficiency checks (ability-linked, not percentile): the same, plus the skill's own existing Class/Stat/Racial/Armor/Skill/Miscellaneous modifiers. Percentile skills and saving throws/attacks are untouched.</description>
 		<ruleset>
@@ -11,7 +11,7 @@
 		<loadorder>10</loadorder>
 	</properties>
 
-	<announcement text="2E Target 20 - Version 1.0 by sirkerry" font="emotefont" />
+	<announcement text="2E Target 20 - Version 1.1 by sirkerry" font="emotefont" />
 
 	<base>
 		<script name="Target20Manager" file="scripts/manager_target20.lua" />

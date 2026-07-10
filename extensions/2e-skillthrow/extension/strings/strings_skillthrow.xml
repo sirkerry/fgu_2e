@@ -2,10 +2,18 @@
 
 <!--
   2E Skill Throw
-  Display label for the new "throw" stat value - matches the existing
-  <string name="percent">%</string> convention in strings_adnd.xml.
+  - Display label for the new "throw" stat value - matches the existing
+    <string name="percent">%</string> convention in strings_adnd.xml.
+  - Overrides the stock ruleset's char_label_skill_base_check / _tooltip
+    strings, which read "Base Percent" / "Base chance of a percentile
+    skill." - accurate for "%" alone, but the same field/label is now
+    shared with "+" (Throw) skills too (see
+    campaign/record_char_skills_skillthrow.xml), so a percentile-specific
+    label no longer fits both uses.
 -->
 
 <root>
 	<string name="throw">+</string>
+	<string name="char_label_skill_base_check">Base Value</string>
+	<string name="char_label_skill_base_check_tooltip">Base value for a percentile ("%") skill's chance, or a "+" (Throw) skill's flat target number.</string>
 </root>
