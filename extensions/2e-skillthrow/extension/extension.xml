@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root version="4.1">
+	<properties>
+		<name>Feature: 2E Skill Throw</name>
+		<version>1.0</version>
+		<author>Kerry Harrison (sirkerry)</author>
+		<description>Adds a "+" (Throw) option to the 2E skill/proficiency Type cycler, alongside the stock ability-linked options and the existing "%" (percentile) option. Modeled on ACKS II's Proficiency Throw: roll 1d20 + modifiers, success on total >= a flat target number entered directly on the skill (reusing the existing Base Check field - ACKS proficiency throw targets are hardcoded per-proficiency in the book, not derived from a formula). Compatible with 2E Target 20 and 2E ADV/DIS.</description>
+		<ruleset>
+			<name>2E</name>
+		</ruleset>
+		<loadorder>10</loadorder>
+	</properties>
+
+	<announcement text="2E Skill Throw - Version 1.0 by sirkerry" font="emotefont" />
+
+	<base>
+		<includefile source="strings/strings_skillthrow.xml" />
+		<includefile source="campaign/template_skillthrow.xml" />
+		<includefile source="campaign/record_char_skills_skillthrow.xml" />
+		<script name="SkillThrowManager" file="scripts/manager_skillthrow.lua" />
+	</base>
+</root>

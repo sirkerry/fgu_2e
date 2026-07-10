@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+  2E Skill Throw
+  Redefines cycler_skill_type (originally in the stock ruleset's
+  campaign/template_char_adnd.xml) to add an 8th cycle value, "throw"
+  (displayed as "+"), alongside the six ability abbreviations and the
+  existing "percent" ("%") option. This is a full redefinition, not a
+  merge - templates are overridden by later-loaded, same-named
+  definitions in FGU (the same technique AA2E's own template_char.xml
+  already uses to restate cycler_charskillability wholesale rather than
+  patching it), so no merge attribute is needed here.
+-->
+
+<root>
+	<template name="cycler_skill_type">
+		<button_stringcycler_content_column>
+			<parameters>
+				<defaultlabelres mergerule="replace">dash</defaultlabelres>
+				<labelsres>str|dex|con|int|wis|cha|percent|throw</labelsres>
+				<values>strength|dexterity|constitution|intelligence|wisdom|charisma|percent|throw</values>
+			</parameters>
+		</button_stringcycler_content_column>
+	</template>
+</root>

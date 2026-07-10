@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+  2E Skill Throw
+  - char_skill_editor_main: extends the stat-cycler's visibility script
+    (stock: campaign/record_char_skills.xml) so the Base Check field also
+    shows for the new "throw" ("+") option, not just "percent" ("%").
+    Reuses the same field rather than adding a new one - a skill is only
+    ever percent OR throw at a time, never both.
+  - skill_item: swaps the "total" control's attached script to
+    campaign/scripts/number_charskill_skillthrow.lua, a copy of the stock
+    campaign/scripts/number_charskill.lua with one added condition so
+    "throw" skills also compute their total from Base Check instead of an
+    ability score (see that file for the stock behavior it preserves).
+-->
+
+<root>
+	<windowclass name="char_skill_editor_main" merge="join">
+		<sheetdata merge="join">
+			<cycler_skill_type name="stat" merge="join">
+				<script>
+					function onValueChanged()
+						updateVisibility();
+					end
+					function updateVisibility(nodeSkill)
+						local bVisible = false;
+
+						if (nodeSkill) then
+							local sStat = DB.getValue(nodeSkill, "stat", "Strength"):lower();
+							bVisible = (sStat == "percent" or sStat == "throw");
+						else
+							local sValue = window.stat.getValue();
+							bVisible = (sValue == "%" or sValue == "+");
+						end
+
+						window.base_check.setVisible(bVisible);
+						window.base_label.setVisible(bVisible);
+					end
+				</script>
+			</cycler_skill_type>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="skill_item" merge="join">
+		<sheetdata merge="join">
+			<number_listitem_linked_right name="total" merge="join">
+				<script file="campaign/scripts/number_charskill_skillthrow.lua" />
+			</number_listitem_linked_right>
+		</sheetdata>
+	</windowclass>
+</root>

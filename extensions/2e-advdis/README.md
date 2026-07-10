@@ -4,7 +4,7 @@
 
 FGU extension for the official 2E (AD&D 2nd Edition) ruleset.
 
-**FG Forge Listing:** not yet published
+**[FG Forge Listing](https://forge.fantasygrounds.com/shop/items/3446/view)**
 
 Adds Advantage/Disadvantage roll mechanics — roll the die twice, keep the favorable result — to all four 2E roll types: attacks, saves, ability checks, and skill checks, including percentile (d100) ability/skill checks. Also restyles 2E's stock 10-button modifier stack (+1..+5/-1..-5) into an 8-button layout: ADV/DIS, +1/-1, +2/-2, +3/-3, +5/-5 (5E-style wider buttons; +4/-4 dropped by choice).
 
@@ -12,7 +12,9 @@ Adds Advantage/Disadvantage roll mechanics — roll the die twice, keep the favo
 
 ## Why a Separate Extension from Target 20
 
-This was originally considered as one combined extension with a planned "Target 20" companion (which converts ability/skill checks from 2E's native roll-under mechanic to a unified roll-over-vs-20 system). They were kept separate so each is independently installable — you shouldn't have to adopt one house rule to get the other. Instead, this extension defensively checks whether Target 20 is active (a `Target20Manager.isActive()` check, harmless if that extension isn't installed) and adjusts its own behavior accordingly — same cross-extension pattern already used between `steadfast5e_grr` and `steadfast5e_ls`.
+This was originally considered as one combined extension with a planned "Target 20" companion (which converts ability/skill checks from 2E's native roll-under mechanic to a unified roll-over-vs-20 system). They were kept separate so each is independently installable — you shouldn't have to adopt one house rule to get the other. Instead, this extension checks each individual roll for a "this was already converted to roll-over" flag (`rRoll.bTarget20`, stamped by Target 20; `rRoll.bSkillThrow`, stamped by `2e-skillthrow`'s "+" proficiency-throw skills) and adjusts its own behavior per-roll accordingly. Neither companion extension needs to be installed for this to work — both flags simply read as `nil`/false if their extension isn't present.
+
+Earlier versions of this check asked "is the Target 20 extension installed and active at all" (`Target20Manager.isActive()`) rather than "was *this* roll actually converted" — that mismatched percentile skills, which stay roll-under even with Target 20 installed, since `isActive()` is unconditionally `true` just from the extension being loaded. Checking the roll's own flag instead fixed that case too, not just added `2e-skillthrow` support.
 
 ## How It Works
 
@@ -45,7 +47,7 @@ ADV/DIS use 5E's own wider button size (30px, vs 2E's original 22px, which didn'
 - Purely additive — no stock ruleset file is edited; hooks are registered via CoreRPG's own generic wildcard extension points
 - Compatible with `AD&D Options and House Rules.ext`'s "Ability Check Dice" option (1d20/3d6/4d6): this extension only affects rolls with exactly one `d20` or `d100` die, so it automatically and safely does nothing when that option is set to 3d6/4d6 for ability checks — no special-case code needed
 - **Deliberately scoped to d20/d100 only — 3d6/4d6-mode checks are not supported.** `ActionD20.encodeAdvantage`/`decodeAdvantage` work by duplicating exactly one die and comparing the two individual results; a 3d6/4d6 check already has 3-4 dice in its pool, so naively removing the single-die restriction would produce a broken result (duplicating and comparing just one of the three/four dice while the others pass through unmodified — not a real "advantage on the check"). Supporting this properly would need different logic entirely: duplicate the *whole* dice pool (3d6 → 6d6, two groups of 3), sum each group separately, and keep the better-summing group — conceptually the same "roll twice, keep favorable" idea, just at the pool level instead of the single-die level, and genuinely more code than reusing `ActionD20`. Not built — clicking ADV/DIS before a 3d6/4d6-mode check just does nothing (the button still releases normally; see the dice-shape guard in `manager_advdis.lua`).
-- Designed to compose with a future Target 20 extension via a defensive `Target20Manager.isActive()` check (not required to be installed)
+- Composes with `2e-target20` and `2e-skillthrow` via a per-roll flag check (`rRoll.bTarget20`/`rRoll.bSkillThrow`) — neither is required to be installed
 
 ## Installation
 

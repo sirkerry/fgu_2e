@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+  2E Skill Throw
+  Display label for the new "throw" stat value - matches the existing
+  <string name="percent">%</string> convention in strings_adnd.xml.
+-->
+
+<root>
+	<string name="throw">+</string>
+</root>

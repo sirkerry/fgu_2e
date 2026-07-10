@@ -2,7 +2,7 @@
 
 FGU extension for the official 2E (AD&D 2nd Edition) ruleset.
 
-**FG Forge Listing:** not yet published
+**[FG Forge Listing](https://forge.fantasygrounds.com/shop/items/3447/view)**
 
 Converts 2E's roll-under ability and skill checks to a unified **d20 + bonus >= 20** system. Saving throws and attacks are completely untouched.
 
@@ -39,12 +39,17 @@ The six skill modifiers (Class/Stat/Racial/Armor/Skill/Miscellaneous) are exactl
 ## What's Left Alone
 
 - **Percentile skills** (thief skills, etc. — anything with `stat == "percent"`) roll exactly as before, under their own `base_check` on d100. Table 20 doesn't have a natural mapping onto a 0–100 scale, so this extension doesn't attempt one.
+- **Any other custom skill stat value** — e.g. `2e-skillthrow`'s `"+"` (Throw) option — is left alone the same way. The skill-check guard is a *whitelist* of the six real ability names, not a blacklist of `""`/`"percent"`, specifically so a stat value this extension doesn't know about is skipped by default instead of being misread as an ability name.
 - **Saving throws and attack rolls** are never touched at all.
 - **`AD&D Options and House Rules.ext` compatibility**: that extension's "Ability Check Dice" option can swap ability checks to a 3d6 or 4d6 pool instead of 1d20. Target 20 only activates on rolls made of exactly one `d20` die — if that option has switched to 3d6/4d6, this extension leaves the roll alone and lets that extension's own mechanic run unmodified, rather than producing a nonsensical mixed result.
 
-## Composing with `2e-advdis`
+## Composing with `2e-advdis` and `2e-skillthrow`
 
-This extension exposes a global `Target20Manager.isActive()` (always `true` while installed — no toggle). `2e-advdis` (Advantage/Disadvantage) already defensively checks for this exact function: if Target 20 is active, ability/skill checks are roll-over just like everything else, so `2e-advdis` skips its own roll-under inversion logic (which otherwise keeps the *lower* of two d20s on Advantage) and behaves like a normal "keep the higher roll" mechanic instead. Neither extension requires the other to be installed.
+This extension exposes a global `Target20Manager.isActive()` (always `true` while installed — no toggle) for any extension that wants to defensively check for it. `2e-advdis` no longer relies on this for its own roll-direction decision, though — it now reads `rRoll.bTarget20` directly off each roll (stamped here at roll-build/mod time), which is accurate per-roll rather than "Target 20 is installed at all" (the latter mismatched percentile skills, which stay roll-under even with Target 20 active).
+
+`modRoll`/`onRoll` for skill checks dispatch through `ActionsManager`'s single-slot handler registry (last registration wins — it does not chain automatically), so this extension captures whatever is *currently* registered for `"skill"` via `ActionsManager.getModHandler`/`getResultHandler` at `onInit`, rather than hardcoding the stock `ActionSkill.modRoll`/`onRoll` functions as "original". That's what lets `2e-skillthrow` (which also hooks `"skill"` rolls, for its own `"+"` Throw option) compose correctly with this extension regardless of which one loads first — each delegates to whatever the other already installed instead of silently overwriting it.
+
+Neither extension requires the others to be installed.
 
 ## Compatibility
 

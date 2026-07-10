@@ -47,13 +47,20 @@ local function isRollUnderType(rRoll)
 	return rRoll.sType == "check" or rRoll.sType == "skill";
 end
 
--- Defensive check for a future, separately-installable "Target 20"
--- extension, which would convert ability/skill checks to roll-OVER vs a
--- flat 20 - if that's active, checks/skills no longer need the roll-under
--- inversion below. Harmless no-op today since Target20Manager doesn't
--- exist yet (same pattern steadfast5e_grr uses for S5E_LocationSystem).
-local function isTarget20Active()
-	return Target20Manager and Target20Manager.isActive and Target20Manager.isActive();
+-- Whether THIS SPECIFIC roll was already converted to roll-OVER by
+-- another extension (2e-target20's ability/skill checks vs a flat 20, or
+-- 2e-skillthrow's "+" proficiency-throw skills vs a flat per-skill
+-- target) - if so, it no longer needs the roll-under inversion below.
+-- Checked per-roll via the flag each of those extensions stamps on rRoll
+-- at roll-build/mod time (rRoll.bTarget20 / rRoll.bSkillThrow), rather
+-- than asking "is that extension installed at all": the latter used to
+-- mismatch percentile skills, which stay roll-under even with Target 20
+-- installed and active (Target20Manager.isActive() is unconditionally
+-- true just from being loaded, regardless of which individual rolls it
+-- actually converts). Neither flag exists (both read as nil/false) if
+-- neither extension is installed - harmless no-op.
+local function isRollOverConverted(rRoll)
+	return rRoll.bTarget20 or rRoll.bSkillThrow or false;
 end
 
 -- onActionPreModRoll is dispatched as (rSource, rTarget, rRoll) - see
@@ -82,7 +89,7 @@ function onPreModRoll(rSource, rTarget, rRoll)
 		return;
 	end
 
-	if isRollUnderType(rRoll) and not isTarget20Active() then
+	if isRollUnderType(rRoll) and not isRollOverConverted(rRoll) then
 		-- ModifierManager.getKey() is NOT idempotent - reading a key
 		-- consumes/clears it. Read both raw keys exactly once here and
 		-- swap them, then replicate ActionD20.encodeAdvantage's own
@@ -116,7 +123,7 @@ function onPreOnRoll(rSource, rRoll)
 		return;
 	end
 
-	local bInverted = isRollUnderType(rRoll) and not isTarget20Active();
+	local bInverted = isRollUnderType(rRoll) and not isRollOverConverted(rRoll);
 
 	ActionD20.decodeAdvantage(rRoll);
 

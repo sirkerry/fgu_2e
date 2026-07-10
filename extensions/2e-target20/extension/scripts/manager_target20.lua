@@ -24,11 +24,26 @@
 -- effect-tag bonuses are NOT folded into Target 20 skill checks in this
 -- version, unlike ability checks - see README).
 --
--- Percentile skills (stat=="percent") are left completely alone - roll
--- under their own base_check on d100, unmodified. AD&D Options and
--- House Rules' "Ability Check Dice" option (1d20/3d6/4d6) is also
--- respected: Target 20 only applies when the roll is a single d20 -
--- if that option has swapped in 3d6/4d6, this extension leaves it
+-- Only the six ability-linked stats (see ABILITY_STATS below) are
+-- converted. Everything else - percentile skills (stat=="percent"), and
+-- any custom stat value another extension might add (e.g. 2e-skillthrow's
+-- "throw") - is left completely alone. This is a whitelist rather than a
+-- blacklist of just "" and "percent" specifically so a future custom stat
+-- value doesn't get silently misread as an ability name (there is no
+-- "abilities.throw.score", so that used to fall through into Table 44
+-- with a bogus score of 0 instead of being skipped).
+--
+-- modRoll_skill/onRoll_skill delegate to whatever is CURRENTLY registered
+-- for sType "skill" (captured via ActionsManager.getModHandler/
+-- getResultHandler at onInit, not a hardcoded stock function reference) -
+-- registerModHandler/registerResultHandler are single-slot registries
+-- (last registration wins, they don't chain on their own), so this is
+-- what lets another extension (e.g. 2e-skillthrow) also hook "skill"
+-- rolls and compose correctly regardless of which extension loads first.
+--
+-- AD&D Options and House Rules' "Ability Check Dice" option (1d20/3d6/4d6)
+-- is also respected: Target 20 only applies when the roll is a single
+-- d20 - if that option has swapped in 3d6/4d6, this extension leaves it
 -- alone rather than producing a nonsensical result.
 --
 
@@ -60,6 +75,18 @@ end
 local function isSingleD20(rRoll)
 	return rRoll.aDice and #(rRoll.aDice) == 1 and rRoll.aDice[1].type == "d20";
 end
+
+-- The only stat values this extension ever converts. Anything else
+-- (percentile, or a custom stat added by another extension) passes
+-- through untouched - see the header comment above.
+local ABILITY_STATS = {
+	strength = true,
+	dexterity = true,
+	constitution = true,
+	intelligence = true,
+	wisdom = true,
+	charisma = true,
+};
 
 -- ── isActive() exposed as Target20Manager.isActive() ────────────────────────
 -- (this script is registered as name="Target20Manager" in extension.xml,
@@ -129,14 +156,24 @@ end
 -- ── Skill checks ──────────────────────────────────────────────────────────
 
 local Original_ActionSkill_getRoll = nil;
-local Original_ActionSkill_modRoll = nil;
-local Original_ActionSkill_onRoll = nil;
+
+-- Whatever was registered for sType "skill" before this extension's own
+-- onInit ran - stock ActionSkill.modRoll/onRoll if we loaded first, or
+-- another extension's already-installed handler (e.g. 2e-skillthrow's) if
+-- it loaded first. Captured via ActionsManager.getModHandler/
+-- getResultHandler rather than the ActionSkill.modRoll/onRoll globals
+-- directly, since those globals are never reassigned by either extension
+-- (only the registry is) - reading them here would always return the
+-- stock function and silently drop whichever extension's handler was
+-- registered first.
+local fPrevModHandler_skill = nil;
+local fPrevResultHandler_skill = nil;
 
 local function getRoll_skill(rActor, nodeSkill, nTargetDC, bSecretRoll)
 	local rRoll = Original_ActionSkill_getRoll(rActor, nodeSkill, nTargetDC, bSecretRoll);
 
 	local sAbility = DB.getValue(nodeSkill, "stat", "");
-	if sAbility == "" or sAbility == "percent" then
+	if not ABILITY_STATS[sAbility] then
 		return rRoll;
 	end
 	if not isSingleD20(rRoll) then
@@ -169,15 +206,19 @@ local function modRoll_skill(rSource, rTarget, rRoll)
 		-- flip touch it.
 		return;
 	end
-	Original_ActionSkill_modRoll(rSource, rTarget, rRoll);
+	if fPrevModHandler_skill then
+		fPrevModHandler_skill(rSource, rTarget, rRoll);
+	end
 end
 
 local function onRoll_skill(rSource, rTarget, rRoll)
-	if not rRoll.bTarget20 then
-		Original_ActionSkill_onRoll(rSource, rTarget, rRoll);
+	if rRoll.bTarget20 then
+		deliverTarget20Message(rSource, rRoll);
 		return;
 	end
-	deliverTarget20Message(rSource, rRoll);
+	if fPrevResultHandler_skill then
+		fPrevResultHandler_skill(rSource, rTarget, rRoll);
+	end
 end
 
 -- ── Init ──────────────────────────────────────────────────────────────────
@@ -186,13 +227,13 @@ function onInit()
 	Original_ActionCheck_modRoll = ActionCheck.modRoll;
 	Original_ActionCheck_onRoll = ActionCheck.onRoll;
 	Original_ActionSkill_getRoll = ActionSkill.getRoll;
-	Original_ActionSkill_modRoll = ActionSkill.modRoll;
-	Original_ActionSkill_onRoll = ActionSkill.onRoll;
 
 	ActionsManager.registerModHandler("check", modRoll_check);
 	ActionsManager.registerResultHandler("check", onRoll_check);
 
 	ActionSkill.getRoll = getRoll_skill;
+	fPrevModHandler_skill = ActionsManager.getModHandler("skill");
+	fPrevResultHandler_skill = ActionsManager.getResultHandler("skill");
 	ActionsManager.registerModHandler("skill", modRoll_skill);
 	ActionsManager.registerResultHandler("skill", onRoll_skill);
 end
