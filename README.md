@@ -35,3 +35,9 @@ folders are git-tracked backups synced with `sync-to-repo.sh`.
   and spells): a die that rolls its maximum value rerolls and adds,
   chaining on further explosions, using FGU's native compound-explode die
   mode.
+- **[2e-fracstats](extensions/2e-fracstats/README.md)** — Fractional
+  Ability Scores. Extends stock 2E's 18/01-18/00 exceptional strength
+  idea to every ability at every score 1-25: each whole score gets an
+  `XX/01-50` and `XX/51-00` bracket driven by the existing percentile
+  roll, HackMaster-style. Tables are derived from stock 2E's own
+  ability-score tables, not ported from HackMaster.

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root version="4.1">
+	<properties>
+		<name>Feature: 2E Fractional Ability Scores</name>
+		<version>1.0</version>
+		<author>Kerry Harrison (sirkerry)</author>
+		<description>Extends every ability score (Str, Dex, Con, Int, Wis, Cha) with a HackMaster-style fractional bracket: each whole score 1-25 gets an XX/01-50 and XX/51-00 row driven by the existing percentile roll, instead of stock 2E's Strength-only, score-18-only exceptional strength rule.</description>
+		<ruleset>
+			<name>2E</name>
+		</ruleset>
+		<loadorder>10</loadorder>
+	</properties>
+
+	<announcement text="2E Fractional Ability Scores - Version 1.0 by sirkerry" font="emotefont" />
+
+	<base>
+		<script name="FracStatsData" file="scripts/data_fracstats.lua" />
+		<script name="FracStatsManager" file="scripts/manager_fracstats.lua" />
+	</base>
+</root>
