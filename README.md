@@ -59,10 +59,6 @@ also excludes `forge/` and `*.svg` as a safety net.
   derived from class level (Fighter / Crusader-Thief / Mage tracks) or
   NPC Hit Dice. Roll `1d20 + mods >= throw + AC` (ACKS AC 0 = unarmored).
   Composes with `2e-advdis`. Mutually exclusive with `2e-ascendingac`.
-- **[2e-ascendingac](extensions/2e-ascendingac/README.md)** — Ascending
-  AC. Standard ascending Armor Class (10 = unarmored) and BAB display /
-  resolution (`d20 + BAB >= AC`). Class THACO tables unchanged. Mutually
-  exclusive with `2e-attackthrow`.
 - **[2e-thematicsaves](extensions/2e-thematicsaves/README.md)** — Thematic
   Saves. Relabels the ten 2E saves (Hold, Poison, Death, Fear, Device,
   Ray, Stone, Curse, Blast, Spell) with tooltips; mechanics unchanged.
