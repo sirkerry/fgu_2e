@@ -72,9 +72,15 @@ Chat shows e.g. `[ATKTHROW(10+) vs AC 2 need 12+]`.
 
 | Track | 2E classes (name match) |
 |-------|-------------------------|
-| **Fighter** | fighter, ranger, paladin, barbarian, cavalier, … |
-| **Thief** (mid) | thief, rogue, bard, assassin, monk, cleric, druid, priest, … |
+| **Fighter** | fighter, ranger, paladin, barbarian, cavalier, bard, assassin, ruinguard, … |
+| **Thief** (mid) | thief, rogue, monk, cleric, druid, priest, … |
 | **Mage** | mage, wizard, magic-user, illusionist, sorcerer, warlock, … |
+
+Track assignments are verified against each class's own Attack Throw table
+in the ACKS II Revised Rulebook, not just its book-section grouping: Bard
+(p.53), Assassin (p.44), and Zaharan Ruinguard (p.97) all print the
+identical Fighter progression despite being catalogued near the Thief- and
+Mage-track classes elsewhere in the book.
 
 - **Multiclass / multi-class entries:** best (lowest) throw among **active** classes.
 - **Unknown class names:** mid (thief) track.

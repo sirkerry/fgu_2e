@@ -208,14 +208,20 @@ end
 -- Class name -> track mapping (2E names to ACKS columns)
 -- ---------------------------------------------------------------------------
 
+-- Track assignments verified against each class's own Attack Throw table in
+-- the ACKS II Revised Rulebook (not just its book-section grouping): Bard
+-- (p.53), Assassin (p.44), and Zaharan Ruinguard (p.97) all print the
+-- identical Fighter attack-throw progression despite being grouped/flavored
+-- as Thief- or Mage-adjacent classes elsewhere in the book.
 local aFighterNames = {
 	"fighter", "ranger", "paladin", "barbarian", "cavalier", "archer",
 	"berserker", "gladiator", "knight", "warrior", "soldier", "vaultguard",
-	"dwarven vaultguard", "elven spellsword", "explorer",
+	"dwarven vaultguard", "elven spellsword", "explorer", "bard", "assassin",
+	"ruinguard", "zaharan ruinguard",
 };
 
 local aThiefNames = {
-	"thief", "rogue", "bard", "assassin", "monk", "cleric", "druid",
+	"thief", "rogue", "monk", "cleric", "druid",
 	"priest", "priestess", "shaman", "crusader", "paladin-cleric",
 	"illusionist-thief", "nightblade", "elven nightblade", "venturer",
 	"craftpriest", "dwarven craftpriest",
@@ -224,7 +230,7 @@ local aThiefNames = {
 local aMageNames = {
 	"mage", "wizard", "magic-user", "magic user", "illusionist",
 	"sorcerer", "warlock", "witch", "necromancer", "elementalist",
-	"wonderworker", "ruinguard",
+	"wonderworker",
 };
 
 local function trackFromClassName(sName)
