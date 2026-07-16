@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root version="4.1">
+	<properties>
+		<name>Feature: 2E Thematic Saves</name>
+		<version>1.1</version>
+		<author>Kerry Harrison (sirkerry)</author>
+		<description>Relabels the ten AD&amp;D 2E saving throws with shorter thematic names (Hold, Poison, Death, Fear, Device, Ray, Stone, Curse, Blast, Spell) and adds tooltips. Database keys and mechanics are unchanged. Poison, Death, and Spell keep their names.</description>
+		<ruleset>
+			<name>2E</name>
+		</ruleset>
+		<loadorder>20</loadorder>
+	</properties>
+
+	<announcement text="2E Thematic Saves - Version 1.1 by sirkerry" font="emotefont" />
+
+	<base>
+		<includefile source="strings/strings_thematicsaves.xml" />
+		<script name="ThematicSavesManager" file="scripts/manager_thematicsaves.lua" />
+	</base>
+</root>

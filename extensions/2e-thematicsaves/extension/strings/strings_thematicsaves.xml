@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+  2E Thematic Saves
+  Display-only renames of the ten 2E save categories. DB paths
+  (saves.paralyzation, saves.rod, ...) stay the same.
+
+  Mapping (classic 5 groups expanded):
+    PPD:  paralyzation -> Hold,  poison -> Poison,  death -> Death
+    RSW:  rod -> Fear,  staff -> Device,  wand -> Ray
+    PP:   petrification -> Stone,  polymorph -> Curse
+    Breath -> Blast,  Spell -> Spell
+-->
+
+<root>
+	<!-- Base display names (chat rolls use DataCommon.saves_stol, patched in script) -->
+	<string name="paralyzation">Hold</string>
+	<string name="para">Hold</string>
+	<string name="poison">Poison</string>
+	<string name="death">Death</string>
+	<string name="rod">Fear</string>
+	<string name="staff">Device</string>
+	<string name="wand">Ray</string>
+	<string name="petrify">Stone</string>
+	<string name="petrification">Stone</string>
+	<string name="poly">Curse</string>
+	<string name="polymorph">Curse</string>
+	<string name="breath">Blast</string>
+	<string name="spell">Spell</string>
+
+	<!-- Character sheet column labels -->
+	<string name="save_paralyzation_wrapped">Hold</string>
+	<string name="save_poison_wrapped">Poison</string>
+	<string name="save_death_wrapped">Death</string>
+	<string name="save_rod_wrapped">Fear</string>
+	<string name="save_staff_wrapped">Device</string>
+	<string name="save_wand_wrapped">Ray</string>
+	<string name="save_petrification_wrapped">Stone</string>
+	<string name="save_polymorph_wrapped">Curse</string>
+	<string name="save_breath_wrapped">Blast</string>
+	<string name="save_spell_wrapped">Spell</string>
+
+	<!-- Character sheet tooltips (label_savescore tooltip textres="save_*_full") -->
+	<string name="save_paralyzation_full">Hold - Paralysis, holds, and immobility effects.</string>
+	<string name="save_poison_full">Poison - All poisons, venoms, and toxic effects.</string>
+	<string name="save_death_full">Death - Instant death, save-or-die, and lethal magic.</string>
+	<string name="save_rod_full">Fear - Fear, terror, panic, and morale failures.</string>
+	<string name="save_staff_full">Device - Rods, staffs, traps, gadgets, constructs, and non-targeted magic items.</string>
+	<string name="save_wand_full">Ray - Wands and targeted/direct effects (magical or otherwise).</string>
+	<string name="save_petrification_full">Stone - Petrification and turning to stone.</string>
+	<string name="save_polymorph_full">Curse - Polymorph, cursed items, geas, and lingering magical afflictions.</string>
+	<string name="save_breath_full">Blast - Breath weapons, explosive bursts, and area effects.</string>
+	<string name="save_spell_full">Spell - General arcane and divine spells not covered by other categories.</string>
+
+	<!-- Grouped 5-save labels -->
+	<string name="save_paralyzation_poison_death">Hold, Poison or Death</string>
+	<string name="save_rod_staff_wand">Fear, Device or Ray</string>
+	<string name="save_petrify_polymorph">Stone, Curse</string>
+	<string name="save_breath">Blast</string>
+	<string name="save_spell">Spell</string>
+
+	<!-- Class advancement short headers -->
+	<string name="class_label_save_paralyzation_short">Ho</string>
+	<string name="class_label_save_poison_short">Po</string>
+	<string name="class_label_save_death_short">De</string>
+	<string name="class_label_save_rod_short">Fe</string>
+	<string name="class_label_save_staff_short">Dv</string>
+	<string name="class_label_save_wand_short">Ra</string>
+	<string name="class_label_save_petrification_short">St</string>
+	<string name="class_label_save_polymorph_short">Cu</string>
+	<string name="class_label_save_breath_short">Bl</string>
+	<string name="class_label_save_spell_short">Sp</string>
+</root>
