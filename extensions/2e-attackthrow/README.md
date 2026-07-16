@@ -68,22 +68,28 @@ Chat shows e.g. `[ATKTHROW(10+) vs AC 2 need 12+]`.
 
 \* Non-proficient 0-level (peasants, etc.) use 12+.
 
-### 2E class → track mapping
+### 2E class → group mapping
 
-| Track | 2E classes (name match) |
-|-------|-------------------------|
-| **Fighter** | fighter, ranger, paladin, barbarian, cavalier, bard, assassin, ruinguard, … |
-| **Thief** (mid) | thief, rogue, monk, cleric, druid, priest, … |
-| **Mage** | mage, wizard, magic-user, illusionist, sorcerer, warlock, … |
+2E itself groups classes into four Attack Throw progressions — Warrior,
+Priest, Rogue, and Wizard — and that 2E grouping is what determines the
+Attack Throw here, **not** which ACKS class happens to share the name (ACKS's
+own Assassin and Bard are Fighter-track by ACKS's own design; that says
+nothing about 2E's Rogue-group Bard and Assassin).
 
-Track assignments are verified against each class's own Attack Throw table
-in the ACKS II Revised Rulebook, not just its book-section grouping: Bard
-(p.53), Assassin (p.44), and Zaharan Ruinguard (p.97) all print the
-identical Fighter progression despite being catalogued near the Thief- and
-Mage-track classes elsewhere in the book.
+| 2E group | 2E classes (name match) | ACKS table used |
+|----------|--------------------------|------------------|
+| **Warrior** | fighter, ranger, paladin, barbarian, cavalier, … | Fighter |
+| **Priest** | cleric, druid, priest, priestess, shaman, … | Crusader/Thief |
+| **Rogue** | thief, rogue, bard, assassin, monk, … | Crusader/Thief |
+| **Wizard** | mage, wizard, magic-user, illusionist, sorcerer, warlock, … | Mage |
+
+Priest and Rogue currently resolve to the same Attack Throw numbers (ACKS's
+Crusader and Thief tables are identical), but are kept as separate groups
+since that's a fact about ACKS's tables, not about the 2E groups being the
+same thing — a future divergence only needs a new table, not a remap.
 
 - **Multiclass / multi-class entries:** best (lowest) throw among **active** classes.
-- **Unknown class names:** mid (thief) track.
+- **Unknown class names:** mid (Priest/Rogue) progression.
 - **NPCs:** Monster HD column (`hitDice` / `hd`); `N+M` HD rounds up for the throw (ACKS hobgoblin 1+1 → 2 HD → 9+).
 
 ### Manual override (DB)
@@ -92,7 +98,7 @@ Mage-track classes elsewhere in the book.
 |------|---------|
 | `combat.attackthrow.manual` = 1 | PC: use `combat.attackthrow.score` as-is |
 | `combat.attackthrow.score` | PC: the N in N+ (also what the sheet shows) |
-| `combat.attackthrow.track` | PC: force `"fighter"`, `"thief"`, or `"mage"` for all classes |
+| `combat.attackthrow.track` | PC: force `"warrior"`, `"priest"`, `"rogue"`, or `"wizard"` for all classes |
 | `attackthrow_manual` = 1 | NPC / CT: keep manual throw |
 | `attackthrow` | NPC / CT: the N in N+ (sheet field labeled **Throw**) |
 

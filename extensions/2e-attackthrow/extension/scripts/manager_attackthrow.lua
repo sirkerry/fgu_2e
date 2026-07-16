@@ -32,17 +32,22 @@
 --
 -- PROGRESSIONS (ACKS II p.296 / class tables)
 -- ===========================================
--- Three tracks, mapped from 2E class names:
---   fighter  - Fighter (warriors: fighter/ranger/paladin/barbarian/...)
---   thief    - Crusader/Thief (priests + rogues: cleric/druid/thief/bard/...)
---   mage     - Mage (wizards: mage/wizard/illusionist/...)
+-- 2E's own four class groups drive the Attack Throw, mapped from 2E class
+-- names (not from ACKS's own same-named classes -- see classGroupFromClassName):
+--   warrior  - Fighter/ACKS track (fighter/ranger/paladin/barbarian/...)
+--   priest   - Crusader-Thief/ACKS track (cleric/druid/priest/shaman/...)
+--   rogue    - Crusader-Thief/ACKS track (thief/bard/assassin/monk/...)
+--   wizard   - Mage/ACKS track (mage/wizard/illusionist/...)
+-- Priest and Rogue currently share the same ACKS Attack Throw numbers
+-- (Crusader and Thief print identical tables), but are kept as distinct
+-- groups since that's a fact about ACKS, not about the 2E groups.
 -- Multiclass: best (lowest) throw among active classes.
 -- NPCs: Monster HD column of the same table.
 --
 -- MANUAL OVERRIDE
 -- ===============
 -- PC:  combat.attackthrow.manual = 1  -> use combat.attackthrow.score as-is
---      combat.attackthrow.track = "fighter"|"thief"|"mage" forces one track
+--      combat.attackthrow.track = "warrior"|"priest"|"rogue"|"wizard" forces one group
 -- NPC: attackthrow_manual = 1         -> use attackthrow as-is
 --      (also used on CT copies of NPCs)
 -- Editing the sheet Throw field sets the manual flag; changing HD / class
@@ -136,8 +141,8 @@ end
 -- row keep the last (best) throw.
 -- ---------------------------------------------------------------------------
 
--- Fighter column (also Monster HD shares the throw values via aHDThrows)
-local aFighterThrows = {
+-- Warrior column (also Monster HD shares the throw values via aHDThrows)
+local aWarriorThrows = {
 	{ 0, 11 },   -- level 0 trained-ish; table lists 0 as 11+, 0* as 12+
 	{ 1, 10 },
 	{ 3, 9 },
@@ -152,7 +157,9 @@ local aFighterThrows = {
 	-- above 14: stay at 1+ (ACKS fighter table ends here)
 };
 
-local aThiefThrows = {
+-- Priest and Rogue (Crusader and Thief in ACKS) print identical Attack
+-- Throw columns -- both 2E's Priest and Rogue groups land here.
+local aPriestRogueThrows = {
 	{ 0, 11 },
 	{ 2, 10 },
 	{ 4, 9 },
@@ -163,7 +170,7 @@ local aThiefThrows = {
 	{ 14, 4 },
 };
 
-local aMageThrows = {
+local aWizardThrows = {
 	{ 0, 11 },
 	{ 3, 10 },
 	{ 6, 9 },
@@ -205,65 +212,71 @@ local function throwFromTable(aTable, nLevel)
 end
 
 -- ---------------------------------------------------------------------------
--- Class name -> track mapping (2E names to ACKS columns)
+-- Class name -> 2E class-group mapping
 -- ---------------------------------------------------------------------------
 
--- Track assignments verified against each class's own Attack Throw table in
--- the ACKS II Revised Rulebook (not just its book-section grouping): Bard
--- (p.53), Assassin (p.44), and Zaharan Ruinguard (p.97) all print the
--- identical Fighter attack-throw progression despite being grouped/flavored
--- as Thief- or Mage-adjacent classes elsewhere in the book.
-local aFighterNames = {
+-- 2E groups classes into four THAC0 progressions: Warrior, Wizard, Priest,
+-- and Rogue. Group membership is what determines the Attack Throw here --
+-- NOT "which ACKS class happens to share this name" (ACKS's own Assassin
+-- and Bard are Fighter-track by ACKS's own design; that says nothing about
+-- 2E's Rogue-group Bard and Assassin). Priest and Rogue are kept as
+-- separate name lists even though they currently resolve to the same
+-- Attack Throw table (aPriestRogueThrows), since that's a fact about ACKS's
+-- table, not about the 2E groups being the same thing.
+local aWarriorNames = {
 	"fighter", "ranger", "paladin", "barbarian", "cavalier", "archer",
-	"berserker", "gladiator", "knight", "warrior", "soldier", "vaultguard",
-	"dwarven vaultguard", "elven spellsword", "explorer", "bard", "assassin",
-	"ruinguard", "zaharan ruinguard",
+	"berserker", "gladiator", "knight", "warrior", "soldier",
 };
 
-local aThiefNames = {
-	"thief", "rogue", "monk", "cleric", "druid",
-	"priest", "priestess", "shaman", "crusader", "paladin-cleric",
-	"illusionist-thief", "nightblade", "elven nightblade", "venturer",
-	"craftpriest", "dwarven craftpriest",
+local aPriestNames = {
+	"cleric", "druid", "priest", "priestess", "shaman", "paladin-cleric",
 };
 
-local aMageNames = {
+local aRogueNames = {
+	"thief", "rogue", "bard", "assassin", "monk", "illusionist-thief",
+};
+
+local aWizardNames = {
 	"mage", "wizard", "magic-user", "magic user", "illusionist",
 	"sorcerer", "warlock", "witch", "necromancer", "elementalist",
-	"wonderworker",
 };
 
-local function trackFromClassName(sName)
+local function classGroupFromClassName(sName)
 	local s = StringManager.trim(sName or ""):lower();
 	if s == "" then
-		return "thief";
+		return "priest";
 	end
-	for _, v in ipairs(aFighterNames) do
+	for _, v in ipairs(aWarriorNames) do
 		if s == v or s:find(v, 1, true) then
-			return "fighter";
+			return "warrior";
 		end
 	end
-	for _, v in ipairs(aMageNames) do
+	for _, v in ipairs(aWizardNames) do
 		if s == v or s:find(v, 1, true) then
-			return "mage";
+			return "wizard";
 		end
 	end
-	for _, v in ipairs(aThiefNames) do
+	for _, v in ipairs(aPriestNames) do
 		if s == v or s:find(v, 1, true) then
-			return "thief";
+			return "priest";
 		end
 	end
-	-- Unknown custom class: mid progression (thief/crusader) as a safe default
-	return "thief";
+	for _, v in ipairs(aRogueNames) do
+		if s == v or s:find(v, 1, true) then
+			return "rogue";
+		end
+	end
+	-- Unknown custom class: mid (Priest/Rogue) progression as a safe default
+	return "priest";
 end
 
-local function throwForTrackAndLevel(sTrack, nLevel)
-	if sTrack == "fighter" then
-		return throwFromTable(aFighterThrows, nLevel);
-	elseif sTrack == "mage" then
-		return throwFromTable(aMageThrows, nLevel);
+local function throwForGroupAndLevel(sGroup, nLevel)
+	if sGroup == "warrior" then
+		return throwFromTable(aWarriorThrows, nLevel);
+	elseif sGroup == "wizard" then
+		return throwFromTable(aWizardThrows, nLevel);
 	else
-		return throwFromTable(aThiefThrows, nLevel);
+		return throwFromTable(aPriestRogueThrows, nLevel);
 	end
 end
 
@@ -343,11 +356,11 @@ function AttackThrowManager.getAttackThrowForPC(nodePC)
 			if bActive then
 				local nLevel = DB.getValue(nodeClass, "level", 0) or 0;
 				if nLevel > 0 then
-					local sTrack = sForcedTrack;
-					if sTrack ~= "fighter" and sTrack ~= "thief" and sTrack ~= "mage" then
-						sTrack = trackFromClassName(DB.getValue(nodeClass, "name", ""));
+					local sGroup = sForcedTrack;
+					if sGroup ~= "warrior" and sGroup ~= "priest" and sGroup ~= "rogue" and sGroup ~= "wizard" then
+						sGroup = classGroupFromClassName(DB.getValue(nodeClass, "name", ""));
 					end
-					local nThrow = throwForTrackAndLevel(sTrack, nLevel);
+					local nThrow = throwForGroupAndLevel(sGroup, nLevel);
 					if not nBestThrow or nThrow < nBestThrow then
 						nBestThrow = nThrow;
 					end
