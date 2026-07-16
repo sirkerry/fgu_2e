@@ -2,7 +2,7 @@
 
 FGU extension for the official 2E (AD&D 2nd Edition) ruleset.
 
-**FG Forge Listing:** not yet published
+**[FG Forge Listing](https://forge.fantasygrounds.com/shop/items/3445/view)**
 
 Classic exploding-dice house rule for **all** damage rolls — weapons and spells alike. When a damage die rolls its maximum possible value, it rerolls and adds the new result to the total, repeating if the reroll also explodes.
 

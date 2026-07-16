@@ -2,7 +2,7 @@
 
 ![2E KPI](forge/2e-kpi.png)
 
-**FG Forge Listing:** not yet published
+**[FG Forge Listing](https://forge.fantasygrounds.com/shop/items/3442/view)**
 
 FGU extension for the official 2E (AD&D 2nd Edition) ruleset.
 

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Package the live extension into a distributable .ext file (a zip with
 # extension.xml at its root, not nested in a folder) for FG Forge / manual
-# install. Run ./sync-to-repo.sh first if you want the repo mirror updated
+# install. forge/ logos stay in the repo only (never live); FG Forge rejects .svg inside .ext.
+# Run ./sync-to-repo.sh first if you want the repo mirror updated
 # too - this builds straight from the live folder, the source of truth.
 set -euo pipefail
 
@@ -20,7 +21,7 @@ OUT="$DIST/2e-skillthrow.ext"
 mkdir -p "$DIST"
 rm -f "$OUT"
 
-( cd "$LIVE" && zip -r -X "$OUT" . -x '.*' )
+( cd "$LIVE" && zip -r -X "$OUT" . -x '.*' -x 'forge/*' -x 'forge/**' -x '*.svg' )
 
 echo "Built $OUT"
 unzip -l "$OUT"

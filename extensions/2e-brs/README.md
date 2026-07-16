@@ -4,7 +4,7 @@
 
 FGU extension for the official 2E (AD&D 2nd Edition) ruleset.
 
-**FG Forge Listing:** not yet published
+**[FG Forge Listing](https://forge.fantasygrounds.com/shop/items/3443/view)**
 
 Adds **Proficiencies**, **Non-Weapon Proficiencies (Skills)**, and **Advanced Effects** sections to Subrace records — previously Traits-only — and applies them to a character automatically when that subrace is chosen. Also adds a **Non-Weapon Proficiencies** section to the base Race record itself, activating existing stock character-creation logic that had no UI to author it before now.
 

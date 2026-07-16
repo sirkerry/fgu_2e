@@ -10,6 +10,13 @@ self-contained with its own workflow scripts (`backup.sh`/`deploy.sh`/
 `~/.smiteworks/fgdata/extensions/<name>/`, never via symlink; these repo
 folders are git-tracked backups synced with `sync-to-repo.sh`.
 
+**Forge listing assets** (`forge/*.svg`, `forge/*.png`) live only in the
+repo under each extension’s `forge/` folder. They must **not** be
+deployed into the live FGU extensions directory or packaged into
+`.ext` files — FG Forge rejects uploads that contain `.svg` inside the
+extension package. `deploy.sh` only syncs `extension/`; `build-ext.sh`
+also excludes `forge/` and `*.svg` as a safety net.
+
 ## Extensions
 
 - **[2e-kpi](extensions/2e-kpi/README.md)** — Kits, Parcels, and Items.
@@ -41,3 +48,22 @@ folders are git-tracked backups synced with `sync-to-repo.sh`.
   `XX/01-50` and `XX/51-00` bracket driven by the existing percentile
   roll, HackMaster-style. Tables are derived from stock 2E's own
   ability-score tables, not ported from HackMaster.
+- **[2e-skillthrow](extensions/2e-skillthrow/README.md)** — Skill Throw.
+  Adds a "+" (Throw) option to the skill/proficiency Type cycler,
+  alongside ability-linked skills and the existing "%" (percentile)
+  option. Modeled on ACKS II's Proficiency Throw: roll `1d20 + modifiers`,
+  success on `total >=` a flat Base Check target entered on the skill.
+  Composes with `2e-target20` and `2e-advdis`.
+- **[2e-attackthrow](extensions/2e-attackthrow/README.md)** — Attack
+  Throw. Replaces THACO / to-hit matrices with ACKS II Attack Throw
+  derived from class level (Fighter / Crusader-Thief / Mage tracks) or
+  NPC Hit Dice. Roll `1d20 + mods >= throw + AC` (ACKS AC 0 = unarmored).
+  Composes with `2e-advdis`. Mutually exclusive with `2e-ascendingac`.
+- **[2e-ascendingac](extensions/2e-ascendingac/README.md)** — Ascending
+  AC. Standard ascending Armor Class (10 = unarmored) and BAB display /
+  resolution (`d20 + BAB >= AC`). Class THACO tables unchanged. Mutually
+  exclusive with `2e-attackthrow`.
+- **[2e-thematicsaves](extensions/2e-thematicsaves/README.md)** — Thematic
+  Saves. Relabels the ten 2E saves (Hold, Poison, Death, Fear, Device,
+  Ray, Stone, Curse, Blast, Spell) with tooltips; mechanics unchanged.
+
