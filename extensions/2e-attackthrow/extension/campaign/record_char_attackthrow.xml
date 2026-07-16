@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+  2E Attack Throw
+  - charsheet_main: rebind main combat THACO number to Attack Throw (N in N+).
+  - window_thaco_section: same for combat-details row.
+  - npc_combat: NPC Throw field from HD / manual override.
+  - combat_mini_section: full-width matrix subwindow (stock was center-180, lopsided).
+  - combat_mini_thaco_matrix: centered Attack Throw matrix (ACKS AC 0..12).
+-->
+
+<root>
+	<!--
+	  PC main AC total: show ACKS ascending AC (0 = unarmored).
+	  Components stay 2E descending; display is 10 - descending_total.
+	-->
+	<template name="number_chartotalac_defaults">
+		<basicnumber>
+			<description textres="armorclass" />
+			<font>reference-b-large</font>
+			<script>
+				function onInit()
+					super.onInit();
+					local nodeChar = window.getDatabaseNode();
+					DB.addHandler(DB.getPath(nodeChar, "abilities"), "onChildUpdate", onSourceUpdate);
+					DB.addHandler(DB.getPath(nodeChar, "defenses.ac.temporary"), "onUpdate", onSourceUpdate);
+					DB.addHandler(DB.getPath(nodeChar, "defenses.ac.base"), "onUpdate", onSourceUpdate);
+					DB.addHandler(DB.getPath(nodeChar, "defenses.ac.armor"), "onUpdate", onSourceUpdate);
+					DB.addHandler(DB.getPath(nodeChar, "defenses.ac.shield"), "onUpdate", onSourceUpdate);
+					DB.addHandler(DB.getPath(nodeChar, "defenses.ac.misc"), "onUpdate", onSourceUpdate);
+					onSourceUpdate();
+				end
+				function onClose()
+					local nodeChar = window.getDatabaseNode();
+					DB.removeHandler(DB.getPath(nodeChar, "abilities"), "onChildUpdate", onSourceUpdate);
+					DB.removeHandler(DB.getPath(nodeChar, "defenses.ac.temporary"), "onUpdate", onSourceUpdate);
+					DB.removeHandler(DB.getPath(nodeChar, "defenses.ac.base"), "onUpdate", onSourceUpdate);
+					DB.removeHandler(DB.getPath(nodeChar, "defenses.ac.armor"), "onUpdate", onSourceUpdate);
+					DB.removeHandler(DB.getPath(nodeChar, "defenses.ac.shield"), "onUpdate", onSourceUpdate);
+					DB.removeHandler(DB.getPath(nodeChar, "defenses.ac.misc"), "onUpdate", onSourceUpdate);
+				end
+				function onSourceUpdate()
+					local nodeChar = window.getDatabaseNode();
+					local nAcks = 0;
+					if AttackThrowManager and AttackThrowManager.getPCAcksAC then
+						nAcks = AttackThrowManager.getPCAcksAC(nodeChar);
+					else
+						local rActor = ActorManager.resolveActor(nodeChar);
+						local nDex = ActorManagerADND.getAbilityBonus(rActor, "dexterity", "defenseadj") or 0;
+						local nDesc = nDex
+							+ DB.getValue(nodeChar, "defenses.ac.temporary", 0)
+							+ DB.getValue(nodeChar, "defenses.ac.base", 10)
+							+ DB.getValue(nodeChar, "defenses.ac.armor", 0)
+							+ DB.getValue(nodeChar, "defenses.ac.shield", 0)
+							+ DB.getValue(nodeChar, "defenses.ac.misc", 0);
+						nAcks = 10 - nDesc;
+					end
+					-- Write display value; also mirror into total so CT/tooltips match ACKS
+					setValue(nAcks);
+				end
+			</script>
+		</basicnumber>
+	</template>
+
+	<!-- Cells wide enough for "10+"/"22+"; compact so the strip sits under Init. -->
+	<template name="label_fieldtop_thaco_matrix">
+		<stringcontrol>
+			<anchored width="19" height="15">
+				<bottom parent="matrix_roll_label" anchor="top" offset="1"/>
+				<left />
+			</anchored>
+			<font>sheetlabelmini</font>
+			<center />
+		</stringcontrol>
+	</template>
+	<template name="number_thaco_matrix">
+		<stringcontrol>
+			<font>sheetlabelmini</font>
+			<center />
+			<anchored width="19" height="15">
+				<top parent="matrix_roll_label" />
+				<left parent="matrix_roll_label" anchor="right" relation="relative" offset="1" />
+			</anchored>
+			<readonly />
+			<nodrag />
+		</stringcontrol>
+	</template>
+
+	<windowclass name="charsheet_main" merge="join">
+		<sheetdata merge="join">
+			<number_charthaco_charsheet name="thaco" source="combat.attackthrow.score" merge="join">
+				<readonly />
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
+						local node = window.getDatabaseNode();
+						if AttackThrowManager and AttackThrowManager.syncNode then
+							AttackThrowManager.syncNode(node);
+						end
+					end
+				</script>
+			</number_charthaco_charsheet>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="window_thaco_section" merge="join">
+		<sheetdata merge="join">
+			<number_listitem_right name="weapon_penalty" source="combat.attackthrow.score" merge="join">
+				<tooltip textres="char_label_thaco_setting_tooltip" />
+			</number_listitem_right>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="npc_combat" merge="join">
+		<sheetdata merge="join">
+			<number_columnh name="thaco" source="attackthrow" merge="join">
+				<default>10</default>
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
+						local node = window.getDatabaseNode();
+						if AttackThrowManager and AttackThrowManager.syncNode then
+							AttackThrowManager.syncNode(node);
+						end
+					end
+					function onValueChanged()
+						if AttackThrowManager and AttackThrowManager.isSyncing and AttackThrowManager.isSyncing() then
+							return;
+						end
+						local node = window.getDatabaseNode();
+						if not node then
+							return;
+						end
+						DB.setValue(node, "attackthrow_manual", "number", 1);
+						local nThrow = getValue();
+						DB.setValue(node, "thaco", "number", 10 + nThrow);
+						if window.onSummaryChanged then
+							window.onSummaryChanged();
+						end
+					end
+				</script>
+			</number_columnh>
+
+			<!--
+			  NPC AC: modules store AD&amp;D descending AC. Show ACKS ascending
+			  (0 = unarmored). Edits are converted back to descending for storage
+			  so modules and CT copies stay compatible. setValue on a sourced
+			  control writes the DB field, so we always re-assert descending
+			  after refreshing the display value.
+			-->
+			<number_columnh name="ac" merge="join">
+				<script>
+					local bInternal = false;
+					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
+						local node = window.getDatabaseNode();
+						DB.addHandler(DB.getPath(node, "ac"), "onUpdate", onDBUpdate);
+						refreshFromDB();
+					end
+					function onClose()
+						local node = window.getDatabaseNode();
+						DB.removeHandler(DB.getPath(node, "ac"), "onUpdate", onDBUpdate);
+					end
+					function onDBUpdate()
+						if bInternal then
+							return;
+						end
+						refreshFromDB();
+					end
+					function toAcks(nDesc)
+						if AttackThrowManager and AttackThrowManager.descendingToAcks then
+							return AttackThrowManager.descendingToAcks(nDesc);
+						end
+						return 10 - (tonumber(nDesc) or 10);
+					end
+					function toDesc(nAcks)
+						if AttackThrowManager and AttackThrowManager.acksToDescending then
+							return AttackThrowManager.acksToDescending(nAcks);
+						end
+						return 10 - (tonumber(nAcks) or 0);
+					end
+					function refreshFromDB()
+						local node = window.getDatabaseNode();
+						local nDesc = DB.getValue(node, "ac", 10);
+						local nAcks = toAcks(nDesc);
+						bInternal = true;
+						setValue(nAcks);
+						-- If source-binding wrote ACKS into ac, restore descending
+						if DB.getValue(node, "ac", 10) ~= nDesc then
+							DB.setValue(node, "ac", "number", nDesc);
+						end
+						bInternal = false;
+					end
+					function onValueChanged()
+						if bInternal then
+							return;
+						end
+						local node = window.getDatabaseNode();
+						local nAcks = getValue();
+						local nDesc = toDesc(nAcks);
+						bInternal = true;
+						DB.setValue(node, "ac", "number", nDesc);
+						setValue(nAcks);
+						bInternal = false;
+						if window.onSummaryChanged then
+							window.onSummaryChanged();
+						end
+					end
+				</script>
+			</number_columnh>
+		</sheetdata>
+		<script>
+			function onSummaryChanged()
+				if super and super.onSummaryChanged then
+					super.onSummaryChanged();
+				end
+				if summary_label then
+					local s = summary_label.getValue() or "";
+					s = string.gsub(s, "THACO:%s*(%-?%d+)", "Throw: %1+");
+					-- Summary still pulls raw DB ac (descending); rewrite as ACKS
+					local node = getDatabaseNode();
+					if node then
+						local nDesc = DB.getValue(node, "ac", 10);
+						local nAcks = 10 - nDesc;
+						s = string.gsub(s, "AC:%s*" .. tostring(nDesc), "AC: " .. tostring(nAcks));
+					end
+					summary_label.setValue(s);
+				end
+			end
+		</script>
+	</windowclass>
+
+	<!--
+	  Full redefine of combat_mini_section (not merge).
+	  Logs showed:
+	    - merge cannot replace stock matrix anchors cleanly
+	    - abilitynotes failed with "anchoring to an uncalculated control
+	      (combat_attackthrow_matrix)" when the new host was merge-appended
+	      after abilitynotes already existed
+	  Control order here: buttons -> matrix (parented to Init) -> notes.
+	-->
+	<windowclass name="combat_mini_section">
+		<margins control="0,2,0,2" />
+		<script file="campaign/scripts/quicknotes.lua" />
+		<sheetdata>
+			<!-- SURPRISE -->
+			<button_surprise name="surprise_total_roll" source="surprise.total">
+				<anchored height="25" width="20">
+					<top offset="15" />
+					<left anchor="center" offset="-45"/>
+				</anchored>
+			</button_surprise>
+			<stringcontrol name="label_surprisetotal">
+				<anchored to="surprise_total_roll" position="aboveleft" offset="-10,1" />
+				<font>sheetlabelmini</font>
+				<center />
+				<static textres="char_label_surpriseroll" />
+				<tooltip textres="char_label_surpriseroll_tooltip" />
+			</stringcontrol>
+
+			<!-- INIT -->
+			<button_charinit name="initiative" source="initiative.total">
+				<anchored height="25" width="20">
+					<top offset="15" />
+					<left parent="surprise_total_roll" anchor="right" relation="relative" offset="15" />
+				</anchored>
+			</button_charinit>
+			<label_fieldtop name="label_rollinittop">
+				<anchored to="initiative" />
+				<font>sheetlabelmini</font>
+				<center />
+				<static textres="init" />
+				<tooltip textres="char_label_initiativeroll_tooltip" />
+			</label_fieldtop>
+
+			<!-- DELAY -->
+			<button_charinitdelay name="initiativedelay">
+				<anchored height="25" width="20">
+					<top offset="15" />
+					<left parent="surprise_total_roll" anchor="right" relation="relative" offset="15" />
+				</anchored>
+			</button_charinitdelay>
+			<label_fieldtop name="label_initdelaytop">
+				<anchored to="initiativedelay" />
+				<font>sheetlabelmini</font>
+				<center />
+				<static textres="delay" />
+				<tooltip textres="char_initdelay_tooltip" />
+			</label_fieldtop>
+
+			<!-- TURN UNDEAD -->
+			<button_turnundead name="turnlevel">
+				<script>
+					function onInit()
+						DB.addHandler(DB.getPath(window.getDatabaseNode(), "turn.total"), "onUpdate", onValueChanged);
+						onValueChanged();
+					end
+					function onClose()
+						DB.removeHandler(DB.getPath(window.getDatabaseNode(), "turn.total"), "onUpdate", onValueChanged);
+					end
+					function onValueChanged()
+						local nTLevel = DB.getValue(window.getDatabaseNode(), "turn.total", 0);
+						local bShow = (nTLevel &gt; 0);
+						setVisible(bShow);
+						window.label_turnlevel.setVisible(bShow);
+					end
+				</script>
+				<anchored height="25" width="20">
+					<top offset="15" />
+					<left parent="surprise_total_roll" anchor="right" relation="relative" offset="15" />
+				</anchored>
+			</button_turnundead>
+			<label_fieldtop name="label_turnlevel">
+				<anchored to="turnlevel" />
+				<font>sheetlabelmini</font>
+				<static textres="char_label_turn" />
+				<tooltip textres="char_label_turn_tooltip" />
+			</label_fieldtop>
+
+			<!--
+			  Attack Throw matrix host: horizontal center = Init center.
+			  Use left/right about Init center (not static width - FGU ignored
+			  width= on the old merged host).
+			-->
+			<subwindow name="combat_attackthrow_matrix">
+				<anchored height="108">
+					<top parent="initiative" anchor="bottom" offset="8" />
+					<left parent="initiative" anchor="center" offset="-145" />
+					<right parent="initiative" anchor="center" offset="145" />
+				</anchored>
+				<activate />
+				<fastinit />
+				<class>combat_mini_thaco_matrix</class>
+			</subwindow>
+
+			<!-- Below the matrix (must be declared after the host above). -->
+			<list_abilitynotes name="abilitynotes">
+				<anchored>
+					<top parent="combat_attackthrow_matrix" anchor="bottom" relation="relative" offset="10" />
+					<left />
+					<right />
+					<sizelimits>
+						<minimum height="20" />
+					</sizelimits>
+				</anchored>
+			</list_abilitynotes>
+		</sheetdata>
+	</windowclass>
+
+	<!--
+	  Title / Base / hint: full host width, text-centered.
+	  Grid left-padded so the whole AC strip shares the title center line:
+	    grid_width ~= 286; (290-286)/2 = 2 -> offset 2.
+	-->
+	<windowclass name="combat_mini_thaco_matrix">
+		<script file="campaign/scripts/char_matrix_attackthrow.lua" />
+		<sheetdata>
+			<anchor_left name="leftanchor" />
+
+			<label name="thaco_attack_matrix_title_label">
+				<anchored height="16">
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="1" />
+					<left />
+					<right />
+				</anchored>
+				<static textres="thaco_attack_matrix_title" />
+				<font>sheetlabel</font>
+				<center />
+			</label>
+
+			<label name="base_throw_line">
+				<anchored height="16">
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="2" />
+					<left />
+					<right />
+				</anchored>
+				<static>Base 10+</static>
+				<font>sheetlabel</font>
+				<center />
+			</label>
+
+			<line_column name="divider1">
+				<anchored>
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="1" />
+					<left offset="20" />
+					<right offset="-20" />
+				</anchored>
+				<center />
+			</line_column>
+
+			<label name="matrix_ac_label">
+				<anchored width="26" height="15">
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="3" />
+					<left offset="2" />
+				</anchored>
+				<static textres="thaco_attack_matrix_ac" />
+				<font>sheetlabelmini</font>
+				<center />
+			</label>
+			<label name="matrix_roll_label">
+				<anchored width="26" height="15">
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="1" />
+					<left offset="2" />
+				</anchored>
+				<static textres="attackthrow_matrix_need" />
+				<font>sheetlabelmini</font>
+				<center />
+			</label>
+
+			<line_column name="divider2">
+				<anchored>
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="1" />
+					<left offset="20" />
+					<right offset="-20" />
+				</anchored>
+				<center />
+			</line_column>
+
+			<label name="acks_hint_label">
+				<anchored height="14">
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="2" />
+					<left />
+					<right />
+				</anchored>
+				<static textres="attackthrow_matrix_acks_hint" />
+				<tooltip textres="attackthrow_matrix_acks_hint_tooltip" />
+				<font>sheetlabelmini</font>
+				<center />
+			</label>
+		</sheetdata>
+	</windowclass>
+</root>
+
+

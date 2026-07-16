@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+  2E Attack Throw
+  ASCII-only strings (FGU ruleset strings are iso-8859-1).
+-->
+
+<root>
+	<string name="thaco">Throw</string>
+	<string name="npc_label_thaco">Throw</string>
+	<string name="thaco_attack_matrix_title">Attack Throw Matrix</string>
+	<string name="thaco_attack_matrix_ac">AC</string>
+	<string name="attackthrow_matrix_need">Need</string>
+	<string name="attackthrow_matrix_base">Base</string>
+	<!-- Short line so it fits centered; full conversion note is on the tooltip. -->
+	<string name="attackthrow_matrix_acks_hint">Need = Base + AC (0 = unarmored)</string>
+	<string name="attackthrow_matrix_acks_hint_tooltip">ACKS ascending AC starts at 0 (unarmored) and goes up. Roll 1d20 + mods; hit if total &gt;= Base + target AC. From 2E descending AC: ACKS AC = 10 - 2E AC (so 2E AC 10 = ACKS AC 0).</string>
+	<string name="char_label_thaco_setting">Attack Throw</string>
+	<string name="char_label_thaco_setting_tooltip">ACKS II Attack Throw (the N in N+). To hit: roll 1d20 + modifiers &gt;= Base + target AC, where AC is ACKS ascending (unarmored = 0). From 2E descending AC: ACKS AC = 10 - 2E AC.</string>
+	<string name="class_thaco_tooltip">Class advancement THACO is ignored while 2E Attack Throw is active. Attack throws come from the ACKS II class/HD progressions (Fighter, Crusader/Thief, Mage).</string>
+	<string name="npc_label_thaco_tooltip">ACKS II Attack Throw from Hit Dice (Monster HD column). Edit to set a manual throw; change HD to recompute from the table.</string>
+	<string name="armorclass">AC</string>
+	<string name="ac">AC</string>
+	<string name="char_tooltip_ac">ACKS ascending Armor Class (0 = unarmored, higher is better). Need to hit = Attack Throw + AC. 2E descending AC is stored underneath (ACKS AC = 10 - 2E AC).</string>
+</root>
