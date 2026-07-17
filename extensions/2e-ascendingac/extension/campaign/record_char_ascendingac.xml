@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+  2E Ascending AC
+  All visibility toggling below is driven by AscendingACManager.isOn()
+  (options.HouseRule_ASCENDING_AC, default "on"; see scripts/manager_ascendingac.lua).
+
+  - charsheet_main: PC combat-score box always showed THAC0/"THACO" natively
+    even with the option on (char_main.lua only mirrors the DB values, never
+    the visible label/value); adds a parallel BAB box in the same slot.
+  - npc_combat: ac_ascending/bab mirroring and their controls exist in
+    npc_main.lua/record_npc.xml only as commented-out dead code; adds the
+    missing controls; manager_ascendingac.lua does the mirroring globally.
+  - combat_mini_section: full redefine (merge cannot re-anchor cleanly, same
+    as 2e-attackthrow) adding the Ascending AC Matrix, shown only when the
+    option is on.
+-->
+
+<root>
+	<!-- PC sheet: parallel BAB box in the same slot as the THAC0 combat score -->
+	<windowclass name="charsheet_main" merge="join">
+		<sheetdata merge="join">
+			<number_charthaco_charsheet name="thaco" merge="join">
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
+						DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+						onOptionChanged();
+					end
+					function onClose()
+						if super and super.onClose then
+							super.onClose();
+						end
+						DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+					end
+					function onOptionChanged()
+						setVisible(not (AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn()));
+					end
+				</script>
+			</number_charthaco_charsheet>
+			<label_combatscores name="thaco_label" merge="join">
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
+						DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+						onOptionChanged();
+					end
+					function onClose()
+						if super and super.onClose then
+							super.onClose();
+						end
+						DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+					end
+					function onOptionChanged()
+						setVisible(not (AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn()));
+					end
+				</script>
+			</label_combatscores>
+
+			<number_charthaco_charsheet name="bab_pc" source="combat.bab.score" insertafter="thaco">
+				<anchored to="combatanchor" width="40" height="30">
+					<top parent="combatanchor" offset="5" />
+					<left anchor="right" relation="relative" offset="5" />
+				</anchored>
+				<readonly />
+				<script>
+					function onInit()
+						DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+						onOptionChanged();
+					end
+					function onClose()
+						DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+					end
+					function onOptionChanged()
+						setVisible(AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn());
+					end
+				</script>
+			</number_charthaco_charsheet>
+			<label_combatscores name="bab_label_pc" insertafter="thaco_label">
+				<anchored to="bab_pc" position="above" offset="2,-3" />
+				<static textres="bab" />
+				<script>
+					function onInit()
+						DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+						onOptionChanged();
+					end
+					function onClose()
+						DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+					end
+					function onOptionChanged()
+						setVisible(AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn());
+					end
+				</script>
+			</label_combatscores>
+		</sheetdata>
+	</windowclass>
+
+	<!-- NPC sheet: add the ac_ascending/bab controls stock never finished wiring up -->
+	<windowclass name="npc_combat" merge="join">
+		<sheetdata merge="join">
+			<number_columnh name="ac" merge="join">
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
+						DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+						onOptionChanged();
+					end
+					function onClose()
+						if super and super.onClose then
+							super.onClose();
+						end
+						DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+					end
+					function onOptionChanged()
+						setVisible(not (AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn()));
+					end
+				</script>
+			</number_columnh>
+			<label_column name="ac_label" merge="join">
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
+						DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+						onOptionChanged();
+					end
+					function onClose()
+						if super and super.onClose then
+							super.onClose();
+						end
+						DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+					end
+					function onOptionChanged()
+						setVisible(not (AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn()));
+					end
+				</script>
+			</label_column>
+			<number_columnh name="ac_ascending" insertafter="ac">
+				<readonly />
+				<script>
+					function onInit()
+						DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+						onOptionChanged();
+					end
+					function onClose()
+						DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+					end
+					function onOptionChanged()
+						setVisible(AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn());
+					end
+				</script>
+			</number_columnh>
+			<label_column name="ac_ascending_label" insertafter="ac_label">
+				<static textres="armorclass" />
+				<script>
+					function onInit()
+						DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+						onOptionChanged();
+					end
+					function onClose()
+						DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+					end
+					function onOptionChanged()
+						setVisible(AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn());
+					end
+				</script>
+			</label_column>
+
+			<number_columnh name="thaco" merge="join">
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
+						DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+						onOptionChanged();
+					end
+					function onClose()
+						if super and super.onClose then
+							super.onClose();
+						end
+						DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+					end
+					function onOptionChanged()
+						setVisible(not (AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn()));
+					end
+				</script>
+			</number_columnh>
+			<label_column name="thaco_label" merge="join">
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
+						DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+						onOptionChanged();
+					end
+					function onClose()
+						if super and super.onClose then
+							super.onClose();
+						end
+						DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+					end
+					function onOptionChanged()
+						setVisible(not (AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn()));
+					end
+				</script>
+			</label_column>
+			<number_columnh name="bab" insertafter="thaco">
+				<readonly />
+				<script>
+					function onInit()
+						DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+						onOptionChanged();
+					end
+					function onClose()
+						DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+					end
+					function onOptionChanged()
+						setVisible(AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn());
+					end
+				</script>
+			</number_columnh>
+			<label_column name="bab_label" insertafter="thaco_label">
+				<static textres="bab" />
+				<script>
+					function onInit()
+						DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+						onOptionChanged();
+					end
+					function onClose()
+						DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+					end
+					function onOptionChanged()
+						setVisible(AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn());
+					end
+				</script>
+			</label_column>
+		</sheetdata>
+	</windowclass>
+
+	<!-- Cells wide enough for "10+"/"22+" -->
+	<template name="label_fieldtop_thaco_matrix">
+		<stringcontrol>
+			<anchored width="19" height="15">
+				<bottom parent="matrix_roll_label" anchor="top" offset="1"/>
+				<left />
+			</anchored>
+			<font>sheetlabelmini</font>
+			<center />
+		</stringcontrol>
+	</template>
+	<template name="number_thaco_matrix">
+		<stringcontrol>
+			<font>sheetlabelmini</font>
+			<center />
+			<anchored width="19" height="15">
+				<top parent="matrix_roll_label" />
+				<left parent="matrix_roll_label" anchor="right" relation="relative" offset="1" />
+			</anchored>
+			<readonly />
+			<nodrag />
+		</stringcontrol>
+	</template>
+
+	<!-- Full combat_mini_section redefine (merge cannot re-anchor cleanly, same lesson
+	     as 2e-attackthrow). Matrix subwindow only shown when ascending AC is on. -->
+	<windowclass name="combat_mini_section">
+		<margins control="0,2,0,2" />
+		<script file="campaign/scripts/quicknotes.lua" />
+		<script>
+			function onInit()
+				DB.addHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+				onOptionChanged();
+			end
+			function onClose()
+				DB.removeHandler("options.HouseRule_ASCENDING_AC", "onUpdate", onOptionChanged);
+			end
+			function onOptionChanged()
+				local bOn = AscendingACManager and AscendingACManager.isOn and AscendingACManager.isOn();
+				combat_ascendingac_matrix.setVisible(bOn);
+				if bOn then
+					abilitynotes.setAnchor("top", "combat_ascendingac_matrix", "bottom", "relative", 10);
+				else
+					abilitynotes.setAnchor("top", "initiative", "bottom", "relative", 10);
+				end
+			end
+		</script>
+		<sheetdata>
+			<button_surprise name="surprise_total_roll" source="surprise.total">
+				<anchored height="25" width="20">
+					<top offset="15" />
+					<left anchor="center" offset="-45"/>
+				</anchored>
+			</button_surprise>
+			<stringcontrol name="label_surprisetotal">
+				<anchored to="surprise_total_roll" position="aboveleft" offset="-10,1" />
+				<font>sheetlabelmini</font>
+				<center />
+				<static textres="char_label_surpriseroll" />
+				<tooltip textres="char_label_surpriseroll_tooltip" />
+			</stringcontrol>
+
+			<button_charinit name="initiative" source="initiative.total">
+				<anchored height="25" width="20">
+					<top offset="15" />
+					<left parent="surprise_total_roll" anchor="right" relation="relative" offset="15" />
+				</anchored>
+			</button_charinit>
+			<label_fieldtop name="label_rollinittop">
+				<anchored to="initiative" />
+				<font>sheetlabelmini</font>
+				<center />
+				<static textres="init" />
+				<tooltip textres="char_label_initiativeroll_tooltip" />
+			</label_fieldtop>
+
+			<button_charinitdelay name="initiativedelay">
+				<anchored height="25" width="20">
+					<top offset="15" />
+					<left parent="surprise_total_roll" anchor="right" relation="relative" offset="15" />
+				</anchored>
+			</button_charinitdelay>
+			<label_fieldtop name="label_initdelaytop">
+				<anchored to="initiativedelay" />
+				<font>sheetlabelmini</font>
+				<center />
+				<static textres="delay" />
+				<tooltip textres="char_initdelay_tooltip" />
+			</label_fieldtop>
+
+			<button_turnundead name="turnlevel">
+				<script>
+					function onInit()
+						DB.addHandler(DB.getPath(window.getDatabaseNode(), "turn.total"), "onUpdate", onValueChanged);
+						onValueChanged();
+					end
+					function onClose()
+						DB.removeHandler(DB.getPath(window.getDatabaseNode(), "turn.total"), "onUpdate", onValueChanged);
+					end
+					function onValueChanged()
+						local nTLevel = DB.getValue(window.getDatabaseNode(), "turn.total", 0);
+						local bShow = (nTLevel &gt; 0);
+						setVisible(bShow);
+						window.label_turnlevel.setVisible(bShow);
+					end
+				</script>
+				<anchored height="25" width="20">
+					<top offset="15" />
+					<left parent="surprise_total_roll" anchor="right" relation="relative" offset="15" />
+				</anchored>
+			</button_turnundead>
+			<label_fieldtop name="label_turnlevel">
+				<anchored to="turnlevel" />
+				<font>sheetlabelmini</font>
+				<static textres="char_label_turn" />
+				<tooltip textres="char_label_turn_tooltip" />
+			</label_fieldtop>
+
+			<!-- Matrix host centered on Init (AC 10..22 => ~13 cols). -->
+			<subwindow name="combat_ascendingac_matrix">
+				<anchored height="108">
+					<top parent="initiative" anchor="bottom" offset="8" />
+					<left parent="initiative" anchor="center" offset="-145" />
+					<right parent="initiative" anchor="center" offset="145" />
+				</anchored>
+				<activate />
+				<fastinit />
+				<class>combat_mini_ascendingac_matrix</class>
+			</subwindow>
+
+			<list_abilitynotes name="abilitynotes">
+				<anchored>
+					<top parent="combat_ascendingac_matrix" anchor="bottom" relation="relative" offset="10" />
+					<left />
+					<right />
+					<sizelimits>
+						<minimum height="20" />
+					</sizelimits>
+				</anchored>
+			</list_abilitynotes>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="combat_mini_ascendingac_matrix">
+		<script file="campaign/scripts/char_matrix_ascendingac.lua" />
+		<sheetdata>
+			<anchor_left name="leftanchor" />
+
+			<label name="ascendingac_matrix_title_label">
+				<anchored height="16">
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="1" />
+					<left />
+					<right />
+				</anchored>
+				<static textres="ascendingac_matrix_title" />
+				<font>sheetlabel</font>
+				<center />
+			</label>
+
+			<label name="base_bab_line">
+				<anchored height="16">
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="2" />
+					<left />
+					<right />
+				</anchored>
+				<static>BAB +0</static>
+				<font>sheetlabel</font>
+				<center />
+			</label>
+
+			<line_column name="divider1">
+				<anchored>
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="1" />
+					<left offset="20" />
+					<right offset="-20" />
+				</anchored>
+				<center />
+			</line_column>
+
+			<label name="matrix_ac_label">
+				<anchored width="26" height="15">
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="3" />
+					<left offset="2" />
+				</anchored>
+				<static textres="ascendingac_matrix_ac" />
+				<font>sheetlabelmini</font>
+				<center />
+			</label>
+			<label name="matrix_roll_label">
+				<anchored width="26" height="15">
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="1" />
+					<left offset="2" />
+				</anchored>
+				<static textres="ascendingac_matrix_need" />
+				<font>sheetlabelmini</font>
+				<center />
+			</label>
+
+			<line_column name="divider2">
+				<anchored>
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="1" />
+					<left offset="20" />
+					<right offset="-20" />
+				</anchored>
+				<center />
+			</line_column>
+
+			<label name="ascendingac_hint_label">
+				<anchored height="14">
+					<top parent="leftanchor" anchor="bottom" relation="relative" offset="2" />
+					<left />
+					<right />
+				</anchored>
+				<static textres="ascendingac_matrix_hint" />
+				<tooltip textres="ascendingac_matrix_hint_tooltip" />
+				<font>sheetlabelmini</font>
+				<center />
+			</label>
+		</sheetdata>
+	</windowclass>
+</root>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+  2E Ascending AC
+  ASCII-only strings (FGU ruleset strings are iso-8859-1).
+-->
+
+<root>
+	<string name="ascendingac_option_label">Ascending AC</string>
+
+	<string name="ascendingac_matrix_title">Ascending AC Matrix</string>
+	<string name="ascendingac_matrix_ac">AC</string>
+	<string name="ascendingac_matrix_need">Need</string>
+	<string name="ascendingac_matrix_hint">Need on d20 = AC - BAB (hit if d20 + BAB &gt;= AC)</string>
+	<string name="ascendingac_matrix_hint_tooltip">Standard ascending AC: unarmored is 10. BAB = 20 - THACO. Inventory still uses 2E descending AC values; the sheet converts for display and attack resolution.</string>
+</root>
