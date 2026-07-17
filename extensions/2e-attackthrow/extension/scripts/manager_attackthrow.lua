@@ -802,6 +802,11 @@ function onInit()
 		return;
 	end
 
+	if AscendingACManager and AscendingACManager.isActive and AscendingACManager.isActive() then
+		ChatManager.SystemMessage(
+			"2E Attack Throw: 2E Ascending AC is also loaded. Use only one of these extensions.");
+	end
+
 	Original_getTHACO = ActionAttack.getTHACO;
 	Original_getBaseAttack = ActionAttack.getBaseAttack;
 	ActionAttack.getTHACO = getTHACO_attackthrow;
